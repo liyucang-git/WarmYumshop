@@ -32,6 +32,8 @@
         wx:for="{{dish.categories}}"
         wx:key="index"
         class="category-tag"
+        bindtap="onCategoryTap"
+        data-category="{{item}}"
       >
         <text class="category-text">{{item}}</text>
       </view>
@@ -57,21 +59,24 @@
   </view>
 
   <!-- 操作菜单 -->
-  <t-action-sheet
-    visible="{{showActionSheet}}"
-    items="{{actionItems}}"
-    bind:close="onActionSheetClose"
-    bind:selected="onActionSheetSelect"
-  />
+  <action-sheet
+    bindchange="onActionSheetChange"
+    hidden="{{!showActionSheet}}"
+  >
+    <action-sheet-item bindtap="onEdit">编辑</action-sheet-item>
+    <action-sheet-item bindtap="onDelete">删除</action-sheet-item>
+    <action-sheet-cancel>取消</action-sheet-cancel>
+  </action-sheet>
 
   <!-- 确认删除弹窗 -->
-  <t-dialog
-    visible="{{showDeleteDialog}}"
+  <modal
     title="确认删除"
-    content="确定要删除这个菜品吗？删除后无法恢复。"
-    confirm-btn="删除"
-    cancel-btn="取消"
-    bind:confirm="onDeleteConfirm"
-    bind:cancel="onDeleteCancel"
-  />
+    confirm-text="删除"
+    cancel-text="取消"
+    bindconfirm="onDeleteConfirm"
+    bindcancel="onDeleteCancel"
+    hidden="{{!showDeleteDialog}}"
+  >
+    确定要删除这个菜品吗？删除后无法恢复。
+  </modal>
 </view>

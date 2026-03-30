@@ -55,19 +55,10 @@ Page({
   },
 
   // 操作菜单关闭
-  onActionSheetClose() {
-    this.setData({ showActionSheet: false })
-  },
-
-  // 操作菜单选择
-  onActionSheetSelect(e) {
-    const value = e.detail.value
-    if (value === 'edit') {
-      this.onEdit()
-    } else if (value === 'delete') {
-      this.onDelete()
+  onActionSheetChange(e) {
+    if (!e.detail.value) {
+      this.setData({ showActionSheet: false })
     }
-    this.setData({ showActionSheet: false })
   },
 
   // 编辑
@@ -142,5 +133,23 @@ Page({
     if (!time) return ''
     const date = new Date(time)
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  },
+
+  // 分类点击
+  onCategoryTap(e) {
+    const category = e.currentTarget.dataset.category
+    // 返回首页并传递分类参数
+    wx.navigateBack({
+      delta: 1,
+      success: () => {
+        // 通知首页更新分类筛选
+        const pages = getCurrentPages()
+        const homePage = pages[pages.length - 2]
+        if (homePage) {
+          homePage.setData({ activeCategory: category })
+          homePage.getDishes()
+        }
+      }
+    })
   }
 })

@@ -113,15 +113,13 @@ Page({
   // 切换分类
   toggleCategory(e) {
     const category = e.currentTarget.dataset.category
-    const selectedCategories = [...this.data.selectedCategories]
-    
+    let selectedCategories = this.data.selectedCategories
     const index = selectedCategories.indexOf(category)
     if (index > -1) {
-      selectedCategories.splice(index, 1)
+      selectedCategories = selectedCategories.filter(item => item !== category)
     } else {
-      selectedCategories.push(category)
+      selectedCategories = [...selectedCategories, category]
     }
-    
     this.setData({ selectedCategories })
   },
 

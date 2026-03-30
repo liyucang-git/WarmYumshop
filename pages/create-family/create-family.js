@@ -35,6 +35,16 @@ Page({
     const app = getApp()
     const userInfo = app.globalData.userInfo
 
+    // 检查登录状态
+    if (!userInfo) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      this.setData({ loading: false })
+      return
+    }
+
     wx.cloud.callFunction({
       name: 'family',
       data: {

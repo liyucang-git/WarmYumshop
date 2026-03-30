@@ -52,7 +52,7 @@
         <view 
           wx:for="{{categories}}"
           wx:key="index"
-          class="category-item {{selectedCategories.includes(item) ? 'selected' : ''}}"
+          class="category-item {{selectedCategories.indexOf(item) > -1 ? 'selected' : ''}}"
           bindtap="toggleCategory"
           data-category="{{item}}"
         >
