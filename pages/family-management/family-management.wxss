@@ -1,0 +1,210 @@
+/* pages/family-management/family-management.wxss */
+
+.content {
+  padding: var(--spacing-md);
+}
+
+.family-card {
+  background: var(--color-bg-card);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.family-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.family-icon {
+  width: 60rpx;
+  height: 60rpx;
+  background: var(--color-primary-light);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-md);
+}
+
+.family-icon .icon {
+  font-size: 32rpx;
+}
+
+.family-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.family-info-section {
+  padding: var(--spacing-md);
+  background: var(--color-bg-light);
+  border-radius: var(--border-radius-lg);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.value {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.invite-code-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.code {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: bold;
+  font-family: monospace;
+  background: var(--color-primary-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.copy-btn {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 24rpx;
+  border: none;
+}
+
+.members-section {
+  background: var(--color-bg-card);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.manage-btn {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 24rpx;
+  border: none;
+}
+
+.members-list {
+  margin-top: var(--spacing-md);
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.member-item:last-child {
+  border-bottom: none;
+}
+
+.member-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-right: var(--spacing-md);
+}
+
+.member-info {
+  flex: 1;
+}
+
+.member-name {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.member-role {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+.edit-btn, .leave-btn, .disband-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+}
+
+.edit-btn {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+.leave-btn {
+  background: var(--color-warning);
+  color: var(--color-text-white);
+}
+
+.disband-btn {
+  background: var(--color-danger);
+  color: var(--color-text-white);
+}
+
+@media (min-width: 768px) {
+  .content {
+    padding: var(--spacing-xl);
+  }
+  
+  .family-card, .members-section {
+    padding: var(--spacing-lg);
+  }
+}

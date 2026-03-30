@@ -1,0 +1,71 @@
+<!-- pages/family-management/family-management.wxml -->
+<view class="container">
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <view wx:else class="content">
+    <!-- 家庭信息卡片 -->
+    <view class="family-card">
+      <view class="family-header">
+        <view class="family-icon">
+          <text class="icon">🏠</text>
+        </view>
+        <text class="family-title">家庭信息</text>
+      </view>
+
+      <view class="family-info-section">
+        <view class="info-item">
+          <text class="label">家庭名称</text>
+          <text class="value">{{familyInfo.name}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">家庭邀请码</text>
+          <view class="invite-code-section">
+            <text class="code">{{familyInfo.code}}</text>
+            <button class="copy-btn" bindtap="copyInviteCode">复制</button>
+          </view>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">创建时间</text>
+          <text class="value">{{familyInfo.createdAt}}</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="label">菜品数量</text>
+          <text class="value">{{familyInfo.dishCount}} 道</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成员列表 -->
+    <view class="members-section">
+      <view class="section-header">
+        <text class="section-title">家庭成员</text>
+        <button class="manage-btn" bindtap="manageMembers">管理</button>
+      </view>
+      
+      <view class="members-list">
+        <view wx:for="{{familyInfo.members}}" wx:key="id" class="member-item">
+          <view class="member-avatar">
+            <text class="avatar-text">{{item.name.charAt(0)}}</text>
+          </view>
+          <view class="member-info">
+            <text class="member-name">{{item.name}}</text>
+            <text class="member-role">{{item.role}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="edit-btn" bindtap="editFamilyInfo">编辑家庭信息</button>
+      <button class="leave-btn" bindtap="leaveFamily">退出家庭</button>
+      <button class="disband-btn" bindtap="disbandFamily">解散家庭</button>
+    </view>
+  </view>
+</view>

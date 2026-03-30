@@ -1,0 +1,151 @@
+/* pages/add-dish/add-dish.wxss */
+
+.container {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  padding: 30rpx;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.step-indicator {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.step-container {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.form-group {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  margin-bottom: 10rpx;
+  font-weight: 500;
+}
+
+.input, .textarea {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid var(--color-border);
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  background: #FFFFFF;
+}
+
+.input:focus, .textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.textarea {
+  min-height: 120rpx;
+  resize: vertical;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+  margin-top: 8rpx;
+}
+
+.picker-view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  border: 2rpx solid var(--color-border);
+  border-radius: 12rpx;
+  background: #FFFFFF;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+}
+
+.picker-placeholder {
+  font-size: 28rpx;
+  color: var(--color-text-tertiary);
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+  transform: rotate(90deg);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--color-text-primary);
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid var(--color-border);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+}
+
+.prev-btn, .next-btn, .submit-btn {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+}
+
+.prev-btn {
+  background: var(--color-bg-light);
+  color: var(--color-text-secondary);
+}
+
+.next-btn, .submit-btn {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.submit-btn[loading] {
+  opacity: 0.7;
+}
+
+/* 响应式适配 */
+@media (min-width: 768px) {
+  .container {
+    padding: 60rpx;
+  }
+  
+  .step-container {
+    padding: 40rpx;
+  }
+}

@@ -1,0 +1,223 @@
+<!-- pages/add-dish/add-dish.wxml -->
+<view class="container">
+  <view class="header">
+    <text class="title">添加菜品</text>
+    <text class="step-indicator">步骤 {{currentStep}}/4</text>
+  </view>
+
+  <!-- 步骤1: 基本信息 -->
+  <view wx:if="{{currentStep === 1}}" class="step-container">
+    <view class="form-group">
+      <text class="label">菜品名称</text>
+      <input 
+        class="input" 
+        placeholder="请输入菜品名称" 
+        value="{{formData.name}}" 
+        bindinput="onInputChange" 
+        data-field="name"
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="label">菜品分类</text>
+      <picker
+        class="picker"
+        range="{{categories}}"
+        range-key="label"
+        value="{{categoryIndex}}"
+        bindchange="onCategoryChange"
+      >
+        <view class="picker-view">
+          <text wx:if="{{formData.category}}" class="picker-text">{{formData.category}}</text>
+          <text wx:else class="picker-placeholder">请选择分类</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="label">烹饪难度</text>
+      <picker
+        class="picker"
+        range="{{difficulties}}"
+        range-key="label"
+        value="{{difficultyIndex}}"
+        bindchange="onDifficultyChange"
+      >
+        <view class="picker-view">
+          <text class="picker-text">{{formData.difficulty}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="label">烹饪时间</text>
+      <input 
+        class="input" 
+        placeholder="例如：15分钟" 
+        value="{{formData.cookingTime}}" 
+        bindinput="onInputChange" 
+        data-field="cookingTime"
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="label">菜品描述</text>
+      <textarea 
+        class="textarea" 
+        placeholder="简单描述一下这道菜..." 
+        value="{{formData.description}}" 
+        bindinput="onInputChange" 
+        data-field="description"
+        maxlength="200"
+      />
+      <text class="char-count">{{formData.description.length}}/200</text>
+    </view>
+  </view>
+
+  <!-- 步骤2: 食材清单 -->
+  <view wx:if="{{currentStep === 2}}" class="step-container">
+    <view class="section-title">食材清单</view>
+    
+    <!-- 现有食材列表 -->
+    <view class="ingredients-list">
+      <view wx:for="{{formData.ingredients}}" wx:key="index" class="ingredient-item">
+        <view class="ingredient-info">
+          <text class="ingredient-name">{{item.name}}</text>
+          <text class="ingredient-amount">{{item.amount}}</text>
+        </view>
+        <button 
+          class="delete-btn" 
+          size="mini" 
+          bindtap="removeIngredient" 
+          data-index="{{index}}"
+        >删除</button>
+      </view>
+    </view>
+
+    <!-- 添加新食材 -->
+    <view class="add-ingredient">
+      <view class="input-row">
+        <input 
+          class="ingredient-input" 
+          placeholder="食材名称" 
+          value="{{tempIngredient.name}}" 
+          bindinput="onTempIngredientChange" 
+          data-field="name"
+        />
+        <input 
+          class="amount-input" 
+          placeholder="用量" 
+          value="{{tempIngredient.amount}}" 
+          bindinput="onTempIngredientChange" 
+          data-field="amount"
+        />
+      </view>
+      <button class="add-btn" bindtap="addIngredient">添加食材</button>
+    </view>
+  </view>
+
+  <!-- 步骤3: 烹饪步骤 -->
+  <view wx:if="{{currentStep === 3}}" class="step-container">
+    <view class="section-title">烹饪步骤</view>
+    
+    <!-- 现有步骤列表 -->
+    <view class="steps-list">
+      <view wx:for="{{formData.steps}}" wx:key="index" class="step-item">
+        <view class="step-number">{{item.step}}</view>
+        <view class="step-content">
+          <text class="step-description">{{item.description}}</text>
+          <image wx:if="{{item.image}}" src="{{item.image}}" class="step-image" mode="aspectFill" />
+        </view>
+        <button 
+          class="delete-btn" 
+          size="mini" 
+          bindtap="removeStep" 
+          data-index="{{index}}"
+        >删除</button>
+      </view>
+    </view>
+
+    <!-- 添加新步骤 -->
+    <view class="add-step">
+      <textarea 
+        class="step-textarea" 
+        placeholder="描述这个步骤..." 
+        value="{{tempStep.description}}" 
+        bindinput="onTempStepChange" 
+        data-field="description"
+      />
+      <view class="step-actions">
+        <button class="image-btn" bindtap="chooseImage">添加图片</button>
+        <button class="add-btn" bindtap="addStep">添加步骤</button>
+      </view>
+    </view>
+
+    <!-- 小贴士 -->
+    <view class="form-group">
+      <text class="label">烹饪小贴士</text>
+      <textarea 
+        class="textarea" 
+        placeholder="分享一些烹饪技巧或注意事项..." 
+        value="{{formData.tips}}" 
+        bindinput="onInputChange" 
+        data-field="tips"
+        maxlength="500"
+      />
+      <text class="char-count">{{formData.tips.length}}/500</text>
+    </view>
+  </view>
+
+  <!-- 步骤4: 完成 -->
+  <view wx:if="{{currentStep === 4}}" class="step-container">
+    <view class="success-icon">✓</view>
+    <text class="success-title">准备提交</text>
+    <text class="success-text">请确认以下信息是否正确</text>
+
+    <view class="review-section">
+      <view class="review-item">
+        <text class="review-label">菜品名称</text>
+        <text class="review-value">{{formData.name}}</text>
+      </view>
+      <view class="review-item">
+        <text class="review-label">菜品分类</text>
+        <text class="review-value">{{formData.category}}</text>
+      </view>
+      <view class="review-item">
+        <text class="review-label">烹饪难度</text>
+        <text class="review-value">{{formData.difficulty}}</text>
+      </view>
+      <view class="review-item">
+        <text class="review-label">食材数量</text>
+        <text class="review-value">{{formData.ingredients.length}} 种</text>
+      </view>
+      <view class="review-item">
+        <text class="review-label">步骤数量</text>
+        <text class="review-value">{{formData.steps.length}} 步</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button 
+      wx:if="{{currentStep > 1}}" 
+      class="prev-btn" 
+      bindtap="prevStep"
+    >上一步</button>
+    
+    <button 
+      wx:if="{{currentStep < 4}}" 
+      class="next-btn" 
+      bindtap="nextStep"
+    >下一步</button>
+    
+    <button 
+      wx:if="{{currentStep === 4}}" 
+      class="submit-btn" 
+      bindtap="onSubmit" 
+      loading="{{isSubmitting}}"
+    >提交菜品</button>
+  </view>
+</view>

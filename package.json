@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "tdesign-miniprogram": "^1.13.1"
+  },
+  "name": "warmyumshop",
+  "version": "1.0.0",
+  "description": "## 📱 项目简介",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

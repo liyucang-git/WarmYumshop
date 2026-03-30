@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "暖圆小铺",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "backgroundColor": "#F8F9FA",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-action-sheet": "tdesign-miniprogram/action-sheet/action-sheet"
+  }
+}

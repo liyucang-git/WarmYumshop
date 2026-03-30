@@ -1,0 +1,57 @@
+<!-- pages/join-family/join-family.wxml -->
+<view class="container">
+  <view class="header">
+    <text class="title">加入家庭</text>
+  </view>
+
+  <view class="form-container">
+    <view class="input-section">
+      <text class="label">输入家庭邀请码</text>
+      <input 
+        class="input" 
+        placeholder="请输入6位邀请码" 
+        value="{{inviteCode}}" 
+        bindinput="onInputChange" 
+        maxlength="6"
+      />
+      <text class="hint">邀请码由家庭创建者提供</text>
+    </view>
+
+    <view class="or-divider">
+      <view class="line"></view>
+      <text class="or-text">或者</text>
+      <view class="line"></view>
+    </view>
+
+    <view class="scan-section">
+      <button class="scan-btn" bindtap="scanQRCode">
+        <text class="scan-icon">📷</text>
+        <text class="scan-text">扫描二维码加入</text>
+      </button>
+    </view>
+
+    <view wx:if="{{familyInfo}}" class="family-info">
+      <view class="info-card">
+        <text class="info-title">家庭信息</text>
+        <view class="info-item">
+          <text class="info-label">家庭名称</text>
+          <text class="info-value">{{familyInfo.name}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">创建者</text>
+          <text class="info-value">{{familyInfo.creator}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">成员数量</text>
+          <text class="info-value">{{familyInfo.memberCount}}人</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-buttons">
+    <button class="join-btn" bindtap="onJoinFamily" loading="{{isLoading}}">
+      {{isLoading ? '验证中...' : '加入家庭'}}
+    </button>
+  </view>
+</view>

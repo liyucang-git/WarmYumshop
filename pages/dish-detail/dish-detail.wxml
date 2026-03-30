@@ -1,0 +1,44 @@
+<!-- 菜品详情页 -->
+<view class="page-container">
+  <view class="dish-detail">
+    <!-- 菜品图片 -->
+    <view class="dish-image-container" bindtap="onImageTap">
+      <image 
+        class="dish-image" 
+        src="{{dish.imageUrl || '/images/default-dish.png'}}"
+        mode="aspectFill"
+      />
+      <view class="image-overlay">
+        <text class="overlay-text">点击查看大图</text>
+      </view>
+    </view>
+    
+    <!-- 菜品信息 -->
+    <view class="dish-info">
+      <view class="dish-name">{{dish.name}}</view>
+      <view class="dish-categories">
+        <view 
+          wx:for="{{dish.categories}}"
+          wx:key="index"
+          class="category-tag"
+        >
+          <text class="tag-text">{{item}}</text>
+        </view>
+      </view>
+      <view class="dish-time">
+        <text class="time-label">添加时间：</text>
+        <text class="time-value">{{dish.createTime}}</text>
+      </view>
+      <view class="dish-description" wx:if="{{dish.description}}">
+        <text class="description-label">菜品描述：</text>
+        <text class="description-content">{{dish.description}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="btn btn-primary" bindtap="onEditTap">编辑菜品</button>
+      <button class="btn btn-error" bindtap="onDeleteTap">删除菜品</button>
+    </view>
+  </view>
+</view>

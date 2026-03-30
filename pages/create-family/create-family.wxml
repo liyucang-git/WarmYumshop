@@ -1,0 +1,45 @@
+<!-- pages/create-family/create-family.wxml -->
+<view class="container">
+  <view class="header">
+    <text class="title">创建家庭</text>
+  </view>
+
+  <view class="form-container">
+    <view class="form-group">
+      <text class="label">家庭名称</text>
+      <input 
+        class="input" 
+        placeholder="请输入家庭名称" 
+        value="{{formData.name}}" 
+        bindinput="onInputChange" 
+        data-field="name"
+      />
+    </view>
+
+    <view class="form-group">
+      <text class="label">家庭描述（可选）</text>
+      <textarea 
+        class="textarea" 
+        placeholder="简单描述一下您的家庭..." 
+        value="{{formData.description}}" 
+        bindinput="onInputChange" 
+        data-field="description"
+        maxlength="200"
+      />
+      <text class="char-count">{{formData.description.length}}/200</text>
+    </view>
+
+    <view class="tips">
+      <text class="tip-title">创建家庭后，您可以：</text>
+      <text class="tip-item">• 邀请家人加入</text>
+      <text class="tip-item">• 共享菜品食谱</text>
+      <text class="tip-item">• 共同管理家庭菜单</text>
+    </view>
+  </view>
+
+  <view class="action-buttons">
+    <button class="create-btn" bindtap="onCreateFamily" loading="{{isSubmitting}}">
+      {{isSubmitting ? '创建中...' : '创建家庭'}}
+    </button>
+  </view>
+</view>

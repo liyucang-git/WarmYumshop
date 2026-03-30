@@ -1,0 +1,80 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/personal/personal",
+    "pages/dish-detail/dish-detail",
+    "pages/add-dish/add-dish",
+    "pages/family-management/family-management",
+    "pages/create-family/create-family",
+    "pages/join-family/join-family"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "暖圆小铺",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8F9FA"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#FF6B35",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/personal/personal",
+        "text": "我的",
+        "iconPath": "images/tabbar/personal.png",
+        "selectedIconPath": "images/tabbar/personal-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
+  "requiredPrivateInfos": [
+    "chooseAddress",
+    "chooseLocation"
+  ],
+  "useExtendedLib": {
+    "weui": true
+  },
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-image": "tdesign-miniprogram/image/image",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-action-sheet": "tdesign-miniprogram/action-sheet/action-sheet",
+    "t-radio": "tdesign-miniprogram/radio/radio",
+    "t-radio-group": "tdesign-miniprogram/radio-group/radio-group",
+    "t-checkbox": "tdesign-miniprogram/checkbox/checkbox",
+    "t-checkbox-group": "tdesign-miniprogram/checkbox-group/checkbox-group",
+    "t-switch": "tdesign-miniprogram/switch/switch",
+    "t-rate": "tdesign-miniprogram/rate/rate",
+    "t-progress": "tdesign-miniprogram/progress/progress",
+    "t-swiper": "tdesign-miniprogram/swiper/swiper",
+    "t-steps": "tdesign-miniprogram/steps/steps",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-grid": "tdesign-miniprogram/grid/grid",
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh",
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "t-skeleton": "tdesign-miniprogram/skeleton/skeleton",
+    "t-collapse": "tdesign-miniprogram/collapse/collapse"
+  }
+}
