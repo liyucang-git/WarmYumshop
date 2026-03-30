@@ -1,102 +1,83 @@
-// pages/join-family/join-family.js
-const app = getApp();
-
+// 加入家庭逻辑
 Page({
   data: {
     inviteCode: '',
-    isLoading: false,
-    familyInfo: null
+    loading: false
   },
 
-  onLoad(options) {
-    // 页面初始化
-  },
-
-  // 输入邀请码
-  onInputChange(e) {
-    this.setData({
-      inviteCode: e.detail.value
-    });
-  },
-
-  // 验证邀请码
-  validateInviteCode() {
-    const { inviteCode } = this.data;
-    
-    if (!inviteCode.trim()) {
-      wx.showToast({
-        title: '请输入邀请码',
-        icon: 'none'
-      });
-      return false;
-    }
-
-    if (inviteCode.length !== 6) {
-      wx.showToast({
-        title: '邀请码应为6位字符',
-        icon: 'none'
-      });
-      return false;
-    }
-
-    return true;
+  // 邀请码输入
+  onInviteCodeInput(e) {
+    this.setData({ inviteCode: e.detail.value.toUpperCase() })
   },
 
   // 加入家庭
-  onJoinFamily() {
-    if (!this.validateInviteCode()) {
-      return;
+  onJoin() {
+    const inviteCode = this.data.inviteCode.trim()
+    
+    // 验证
+    if (!inviteCode) {
+      wx.showToast({
+        title: '请输入邀请码',
+        icon: 'none'
+      })
+      return
+    }
+    
+    if (inviteCode.length !== 6) {
+      wx.showToast({
+        title: '邀请码长度应为6位',
+        icon: 'none'
+      })
+      return
     }
 
-    this.setData({ isLoading: true });
-    wx.showLoading({ title: '验证中...' });
+    this.setData({ loading: true })
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
 
-    // 模拟验证过程
-    setTimeout(() => {
-      wx.hideLoading();
-      
-      // 模拟验证成功
-      this.setData({
-        familyInfo: {
-          name: '温馨家庭',
-          code: this.data.inviteCode,
-          creator: '爸爸',
-          memberCount: 3
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'joinFamily',
+        data: {
+          inviteCode,
+          userId: userInfo._id
         }
-      });
-
-      wx.showModal({
-        title: '验证成功',
-        content: `邀请码验证成功！\n家庭名称：温馨家庭\n创建者：爸爸\n成员数量：3人`,
-        success: (res) => {
-          if (res.confirm) {
-            wx.showLoading({ title: '加入中...' });
-            
-            setTimeout(() => {
-              wx.hideLoading();
-              wx.showToast({
-                title: '加入成功！',
-                icon: 'success'
-              });
-
-              // 跳转到家庭管理页面
-              setTimeout(() => {
-                wx.redirectTo({
-                  url: '/pages/family-management/family-management'
-                });
-              }, 1500);
-            }, 1000);
-          }
-        }
-      });
-    }, 1500);
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        // 更新用户信息
+        app.globalData.userInfo.familyId = res.result.data._id
+        app.globalData.userInfo.role = 'member'
+        app.globalData.familyInfo = res.result.data
+        
+        wx.showToast({
+          title: '加入成功',
+          icon: 'success'
+        })
+        wx.navigateBack()
+      } else {
+        wx.showToast({
+          title: res.result.error || '加入失败',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('加入家庭失败:', err)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ loading: false })
+    })
   },
 
-  // 扫描二维码
-  scanQRCode() {
-    wx.showToast({
-      title: '扫码功能开发中',
-      icon: 'none'
-    });
+  // 取消
+  onCancel() {
+    wx.navigateBack()
   }
-});
+})

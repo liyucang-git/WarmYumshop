@@ -1,119 +1,270 @@
-// pages/family-management/family-management.js
-const app = getApp();
-
+// 家庭管理逻辑
 Page({
   data: {
-    familyInfo: null,
-    isLoading: true
+    familyInfo: {},
+    members: [],
+    userRole: '',
+    showConfirmDialog: false,
+    confirmDialogTitle: '',
+    confirmDialogContent: '',
+    actionType: '',
+    targetUserId: ''
   },
 
-  onLoad(options) {
-    this.loadFamilyInfo();
+  onLoad() {
+    this.getFamilyInfo()
   },
 
-  // 加载家庭信息
-  loadFamilyInfo() {
-    wx.showLoading({ title: '加载中...' });
+  // 获取家庭信息
+  getFamilyInfo() {
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
     
-    // 模拟数据
-    setTimeout(() => {
-      this.setData({
-        familyInfo: {
-          id: '1',
-          name: '温馨家庭',
-          code: 'WARM123',
-          members: [
-            { id: '1', name: '爸爸', role: '管理员' },
-            { id: '2', name: '妈妈', role: '成员' },
-            { id: '3', name: '小明', role: '成员' }
-          ],
-          createdAt: '2024-01-01',
-          dishCount: 15
-        },
-        isLoading: false
-      });
-      wx.hideLoading();
-    }, 1000);
+    if (userInfo && userInfo.familyId) {
+      this.setData({ userRole: userInfo.role })
+      
+      wx.cloud.callFunction({
+        name: 'family',
+        data: {
+          action: 'getFamilyInfo',
+          data: { familyId: userInfo.familyId }
+        }
+      })
+      .then(res => {
+        if (res.result.success) {
+          this.setData({ familyInfo: res.result.data })
+          this.getMembersInfo(res.result.data.members)
+        }
+      })
+      .catch(err => {
+        console.error('获取家庭信息失败:', err)
+      })
+    }
   },
 
-  // 复制家庭邀请码
+  // 获取成员信息
+  getMembersInfo(members) {
+    const db = wx.cloud.database()
+    const usersCollection = db.collection('users')
+    
+    const memberPromises = members.map(member => {
+      return usersCollection.doc(member.userId).get()
+    })
+    
+    Promise.all(memberPromises)
+      .then(results => {
+        const membersInfo = results.map((result, index) => ({
+          userId: members[index].userId,
+          nickname: result.data.nickname,
+          avatarUrl: result.data.avatarUrl,
+          role: result.data.role
+        }))
+        this.setData({ members: membersInfo })
+      })
+      .catch(err => {
+        console.error('获取成员信息失败:', err)
+      })
+  },
+
+  // 复制邀请码
   copyInviteCode() {
-    if (!this.data.familyInfo) return;
+    const inviteCode = this.data.familyInfo.inviteCode
+    if (inviteCode) {
+      wx.setClipboardData({
+        data: inviteCode,
+        success: () => {
+          wx.showToast({
+            title: '复制成功',
+            icon: 'success'
+          })
+        }
+      })
+    }
+  },
+
+  // 移除成员
+  removeMember(e) {
+    const userId = e.currentTarget.dataset.userid
+    this.setData({
+      showConfirmDialog: true,
+      confirmDialogTitle: '确认移除',
+      confirmDialogContent: '确定要移除该成员吗？',
+      actionType: 'remove',
+      targetUserId: userId
+    })
+  },
+
+  // 显示离开家庭确认
+  showLeaveConfirm() {
+    this.setData({
+      showConfirmDialog: true,
+      confirmDialogTitle: '确认离开',
+      confirmDialogContent: '确定要离开家庭吗？',
+      actionType: 'leave'
+    })
+  },
+
+  // 显示解散家庭确认
+  showDissolveConfirm() {
+    this.setData({
+      showConfirmDialog: true,
+      confirmDialogTitle: '确认解散',
+      confirmDialogContent: '确定要解散家庭吗？解散后所有成员将被移除。',
+      actionType: 'dissolve'
+    })
+  },
+
+  // 确认操作
+  onConfirmAction() {
+    const { actionType, targetUserId } = this.data
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
+
+    switch (actionType) {
+      case 'remove':
+        this.removeMemberConfirm(targetUserId)
+        break
+      case 'leave':
+        this.leaveFamilyConfirm()
+        break
+      case 'dissolve':
+        this.dissolveFamilyConfirm()
+        break
+    }
+  },
+
+  // 取消操作
+  onCancelAction() {
+    this.setData({ showConfirmDialog: false })
+  },
+
+  // 确认移除成员
+  removeMemberConfirm(userId) {
+    const familyId = this.data.familyInfo._id
     
-    wx.setClipboardData({
-      data: this.data.familyInfo.code,
-      success: () => {
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'removeMember',
+        data: { familyId, memberId: userId }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
         wx.showToast({
-          title: '已复制邀请码',
+          title: '移除成功',
           icon: 'success'
-        });
+        })
+        this.getFamilyInfo()
+      } else {
+        wx.showToast({
+          title: '移除失败',
+          icon: 'none'
+        })
       }
-    });
+    })
+    .catch(err => {
+      console.error('移除成员失败:', err)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ showConfirmDialog: false })
+    })
   },
 
-  // 管理成员
-  manageMembers() {
-    wx.showToast({
-      title: '成员管理功能开发中',
-      icon: 'none'
-    });
-  },
-
-  // 编辑家庭信息
-  editFamilyInfo() {
-    wx.showToast({
-      title: '编辑功能开发中',
-      icon: 'none'
-    });
-  },
-
-  // 退出家庭
-  leaveFamily() {
-    wx.showModal({
-      title: '确认退出',
-      content: '确定要退出这个家庭吗？退出后将无法查看家庭菜品。',
-      success: (res) => {
-        if (res.confirm) {
-          wx.showLoading({ title: '处理中...' });
-          setTimeout(() => {
-            wx.hideLoading();
-            wx.showToast({
-              title: '已退出家庭',
-              icon: 'success'
-            });
-            setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/personal/personal'
-              });
-            }, 1500);
-          }, 1000);
-        }
+  // 确认离开家庭
+  leaveFamilyConfirm() {
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
+    const familyId = userInfo.familyId
+    
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'leaveFamily',
+        data: { familyId, userId: userInfo._id }
       }
-    });
+    })
+    .then(res => {
+      if (res.result.success) {
+        // 更新用户信息
+        app.globalData.userInfo.familyId = ''
+        app.globalData.userInfo.role = ''
+        app.globalData.familyInfo = null
+        
+        wx.showToast({
+          title: '已离开家庭',
+          icon: 'success'
+        })
+        wx.navigateBack()
+      } else {
+        wx.showToast({
+          title: res.result.error || '离开失败',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('离开家庭失败:', err)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ showConfirmDialog: false })
+    })
   },
 
-  // 解散家庭（管理员权限）
-  disbandFamily() {
-    wx.showModal({
-      title: '确认解散',
-      content: '确定要解散这个家庭吗？解散后所有数据将无法恢复。',
-      success: (res) => {
-        if (res.confirm) {
-          wx.showLoading({ title: '处理中...' });
-          setTimeout(() => {
-            wx.hideLoading();
-            wx.showToast({
-              title: '家庭已解散',
-              icon: 'success'
-            });
-            setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/personal/personal'
-              });
-            }, 1500);
-          }, 1000);
-        }
+  // 确认解散家庭
+  dissolveFamilyConfirm() {
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
+    const familyId = userInfo.familyId
+    
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'dissolveFamily',
+        data: { familyId }
       }
-    });
+    })
+    .then(res => {
+      if (res.result.success) {
+        // 更新用户信息
+        app.globalData.userInfo.familyId = ''
+        app.globalData.userInfo.role = ''
+        app.globalData.familyInfo = null
+        
+        wx.showToast({
+          title: '家庭已解散',
+          icon: 'success'
+        })
+        wx.navigateBack()
+      } else {
+        wx.showToast({
+          title: '解散失败',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('解散家庭失败:', err)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ showConfirmDialog: false })
+    })
+  },
+
+  // 返回
+  onBack() {
+    wx.navigateBack()
   }
-});
+})

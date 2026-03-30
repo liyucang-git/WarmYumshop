@@ -1,45 +1,45 @@
-<!-- pages/create-family/create-family.wxml -->
-<view class="container">
+<!-- 暖圆小铺 - 创建家庭 -->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
   <view class="header">
-    <text class="title">创建家庭</text>
+    <view class="header-left" bindtap="onCancel">
+      <view class="back-icon">←</view>
+    </view>
+    <view class="header-title">创建家庭</view>
+    <view class="header-right" bindtap="onCreate">
+      <view class="create-btn">创建</view>
+    </view>
   </view>
 
+  <!-- 表单区域 -->
   <view class="form-container">
-    <view class="form-group">
-      <text class="label">家庭名称</text>
+    <view class="form-item">
+      <view class="form-label">家庭名称</view>
       <input 
-        class="input" 
-        placeholder="请输入家庭名称" 
-        value="{{formData.name}}" 
-        bindinput="onInputChange" 
-        data-field="name"
+        class="form-input" 
+        placeholder="请输入家庭名称（2-20个字符）"
+        value="{{familyName}}"
+        bindinput="onFamilyNameInput"
+        maxlength="20"
       />
-    </view>
-
-    <view class="form-group">
-      <text class="label">家庭描述（可选）</text>
-      <textarea 
-        class="textarea" 
-        placeholder="简单描述一下您的家庭..." 
-        value="{{formData.description}}" 
-        bindinput="onInputChange" 
-        data-field="description"
-        maxlength="200"
-      />
-      <text class="char-count">{{formData.description.length}}/200</text>
+      <view class="form-hint">为你的家庭起一个温馨的名字</view>
     </view>
 
     <view class="tips">
-      <text class="tip-title">创建家庭后，您可以：</text>
-      <text class="tip-item">• 邀请家人加入</text>
-      <text class="tip-item">• 共享菜品食谱</text>
-      <text class="tip-item">• 共同管理家庭菜单</text>
+      <view class="tips-title">创建家庭后，你可以：</view>
+      <view class="tips-list">
+        <view class="tips-item">• 邀请家庭成员加入</view>
+        <view class="tips-item">• 共同管理家庭菜品</view>
+        <view class="tips-item">• 分享美食瞬间</view>
+      </view>
     </view>
   </view>
 
-  <view class="action-buttons">
-    <button class="create-btn" bindtap="onCreateFamily" loading="{{isSubmitting}}">
-      {{isSubmitting ? '创建中...' : '创建家庭'}}
-    </button>
+  <!-- 加载中 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">创建中...</text>
+    </view>
   </view>
 </view>

@@ -1,71 +1,77 @@
-<!-- pages/family-management/family-management.wxml -->
-<view class="container">
-  <view wx:if="{{isLoading}}" class="loading-container">
-    <view class="loading-spinner"></view>
-    <text>加载中...</text>
+<!-- 暖圆小铺 - 家庭管理 -->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-left" bindtap="onBack">
+      <view class="back-icon">←</view>
+    </view>
+    <view class="header-title">家庭管理</view>
+    <view class="header-right"></view>
   </view>
 
-  <view wx:else class="content">
-    <!-- 家庭信息卡片 -->
-    <view class="family-card">
-      <view class="family-header">
-        <view class="family-icon">
-          <text class="icon">🏠</text>
-        </view>
-        <text class="family-title">家庭信息</text>
+  <!-- 家庭信息 -->
+  <view class="family-info-section">
+    <view class="family-name">{{familyInfo.name}}</view>
+    <view class="invite-code-section">
+      <view class="invite-code-label">邀请码</view>
+      <view class="invite-code-content">
+        <text class="invite-code">{{familyInfo.inviteCode}}</text>
+        <view class="copy-btn" bindtap="copyInviteCode">复制</view>
       </view>
-
-      <view class="family-info-section">
-        <view class="info-item">
-          <text class="label">家庭名称</text>
-          <text class="value">{{familyInfo.name}}</text>
-        </view>
-        
-        <view class="info-item">
-          <text class="label">家庭邀请码</text>
-          <view class="invite-code-section">
-            <text class="code">{{familyInfo.code}}</text>
-            <button class="copy-btn" bindtap="copyInviteCode">复制</button>
-          </view>
-        </view>
-        
-        <view class="info-item">
-          <text class="label">创建时间</text>
-          <text class="value">{{familyInfo.createdAt}}</text>
-        </view>
-        
-        <view class="info-item">
-          <text class="label">菜品数量</text>
-          <text class="value">{{familyInfo.dishCount}} 道</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 成员列表 -->
-    <view class="members-section">
-      <view class="section-header">
-        <text class="section-title">家庭成员</text>
-        <button class="manage-btn" bindtap="manageMembers">管理</button>
-      </view>
-      
-      <view class="members-list">
-        <view wx:for="{{familyInfo.members}}" wx:key="id" class="member-item">
-          <view class="member-avatar">
-            <text class="avatar-text">{{item.name.charAt(0)}}</text>
-          </view>
-          <view class="member-info">
-            <text class="member-name">{{item.name}}</text>
-            <text class="member-role">{{item.role}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 操作按钮 -->
-    <view class="action-buttons">
-      <button class="edit-btn" bindtap="editFamilyInfo">编辑家庭信息</button>
-      <button class="leave-btn" bindtap="leaveFamily">退出家庭</button>
-      <button class="disband-btn" bindtap="disbandFamily">解散家庭</button>
+      <view class="invite-hint">分享邀请码给家人，邀请他们加入</view>
     </view>
   </view>
+
+  <!-- 成员列表 -->
+  <view class="members-section">
+    <view class="section-header">
+      <view class="section-title">家庭成员</view>
+      <view class="member-count">{{familyInfo.members ? familyInfo.members.length : 0}} 人</view>
+    </view>
+    <view class="members-list">
+      <view 
+        wx:for="{{members}}"
+        wx:key="userId"
+        class="member-item"
+      >
+        <view class="member-avatar">
+          <image 
+            class="avatar-image" 
+            src="{{item.avatarUrl || '/images/default-avatar.png'}}"
+            mode="aspectFill"
+          />
+        </view>
+        <view class="member-info">
+          <view class="member-name">{{item.nickname}}</view>
+          <view class="member-role">{{item.role === 'creator' ? '创建者' : '成员'}}</view>
+        </view>
+        <view class="member-actions" wx:if="{{userRole === 'creator' && item.role !== 'creator'}}">
+          <view class="remove-btn" bindtap="removeMember" data-userid="{{item.userId}}">
+            移除
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view class="btn btn-danger" bindtap="showLeaveConfirm" wx:if="{{userRole !== 'creator'}}">
+      离开家庭
+    </view>
+    <view class="btn btn-danger" bindtap="showDissolveConfirm" wx:if="{{userRole === 'creator'}}">
+      解散家庭
+    </view>
+  </view>
+
+  <!-- 确认弹窗 -->
+  <t-dialog
+    visible="{{showConfirmDialog}}"
+    title="{{confirmDialogTitle}}"
+    content="{{confirmDialogContent}}"
+    confirm-btn="确认"
+    cancel-btn="取消"
+    bind:confirm="onConfirmAction"
+    bind:cancel="onCancelAction"
+  />
 </view>

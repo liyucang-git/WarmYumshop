@@ -1,129 +1,87 @@
-<!-- 暖圆小铺 - 个人中心页 -->
+<!-- 暖圆小铺 - 个人中心 -->
 <view class="page-container">
   <!-- 顶部导航栏 -->
   <view class="header">
     <view class="header-title">个人中心</view>
-    <view class="header-back" bindtap="onBackTap" wx:if="{{showBack}}">
-      <image class="back-icon" src="/images/icons/back.svg" />
-    </view>
   </view>
 
   <!-- 用户信息区 -->
-  <view class="user-section">
-    <view class="user-avatar-container">
+  <view class="user-info-section" bindtap="onUserInfoTap">
+    <view class="user-avatar">
       <image 
-        class="user-avatar" 
+        class="avatar-image" 
         src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}"
         mode="aspectFill"
-        binderror="onAvatarError"
       />
-      <view class="avatar-edit" bindtap="onEditAvatarTap">
-        <image class="edit-icon" src="/images/icons/edit.svg" />
-      </view>
     </view>
-    
-    <view class="user-info">
-      <view class="user-name">{{userInfo.nickName || '未登录'}}</view>
-      <view class="user-status {{userInfo.isLoggedIn ? 'logged-in' : 'logged-out'}}">
-        {{userInfo.isLoggedIn ? '已登录' : '未登录'}}
-      </view>
+    <view class="user-details">
+      <view class="user-nickname">{{userInfo.nickname || '点击登录'}}</view>
+      <view class="user-status">{{userInfo.nickname ? '已登录' : '未登录'}}</view>
     </view>
-    
-    <view class="edit-btn" bindtap="onEditInfoTap" wx:if="{{userInfo.isLoggedIn}}">
-      <image class="edit-icon" src="/images/icons/edit.svg" />
-    </view>
+    <view class="arrow-icon">></view>
   </view>
 
   <!-- 家庭信息区 -->
-  <view class="family-section" wx:if="{{userInfo.isLoggedIn}}">
-    <view class="section-title">家庭信息</view>
-    
-    <view wx:if="{{familyInfo}}">
-      <view class="family-card">
-        <view class="family-name">{{familyInfo.name}}</view>
-        <view class="family-details">
-          <view class="family-member">
-            <image class="member-icon" src="/images/icons/member.svg" />
-            <text class="member-text">{{familyInfo.memberCount}}人</text>
-          </view>
-          <view class="family-invite">
-            <text class="invite-label">邀请码：</text>
-            <text class="invite-code">{{familyInfo.inviteCode}}</text>
-            <button class="copy-btn" bindtap="onCopyInviteCode">复制</button>
-          </view>
-        </view>
-        <view class="family-actions">
-          <button class="action-btn" bindtap="onFamilyManageTap">家庭管理</button>
-        </view>
-      </view>
+  <view class="family-section" wx:if="{{userInfo.familyId}}">
+    <view class="section-header">
+      <view class="section-title">我的家庭</view>
+      <view class="section-action" bindtap="goToFamilyManagement">管理 ></view>
     </view>
-    
-    <view wx:else class="empty-family">
-      <image class="empty-image" src="/images/empty-family.png" />
-      <view class="empty-text">温馨的家庭等待您的加入</view>
-      <view class="empty-subtext">创建家庭或加入现有家庭</view>
-      <view class="family-buttons">
-        <button class="btn btn-primary" bindtap="onCreateFamilyTap">创建家庭</button>
-        <button class="btn btn-outline-primary" bindtap="onJoinFamilyTap">加入家庭</button>
+    <view class="family-info">
+      <view class="family-name">{{familyInfo.name || '加载中...'}}</view>
+      <view class="family-members">{{familyInfo.members ? familyInfo.members.length + ' 位成员' : '加载中...'}}</view>
+    </view>
+    <view class="family-invite">
+      <view class="invite-code">邀请码: {{familyInfo.inviteCode || '加载中...'}}</view>
+      <view class="copy-btn" bindtap="copyInviteCode">复制</view>
+    </view>
+  </view>
+
+  <!-- 无家庭时的引导区 -->
+  <view class="no-family-section" wx:else>
+    <view class="section-header">
+      <view class="section-title">我的家庭</view>
+    </view>
+    <view class="no-family-content">
+      <view class="no-family-icon">👨‍👩‍👧‍👦</view>
+      <view class="no-family-text">还没有加入家庭</view>
+      <view class="no-family-buttons">
+        <button class="btn btn-primary" bindtap="goToCreateFamily">创建家庭</button>
+        <button class="btn btn-secondary" bindtap="goToJoinFamily">加入家庭</button>
       </view>
     </view>
   </view>
 
-  <!-- 操作列表区 -->
+  <!-- 其他操作区 -->
   <view class="action-section">
-    <view class="section-title">其他操作</view>
-    
-    <view class="action-list">
-      <!-- 关于我们 -->
-      <view class="action-item" bindtap="onAboutTap">
-        <image class="action-icon" src="/images/icons/about.svg" />
-        <view class="action-content">
-          <text class="action-title">关于我们</text>
-          <text class="action-desc">了解暖圆小铺</text>
-        </view>
-        <image class="action-arrow" src="/images/icons/arrow-right.svg" />
-      </view>
-      
-      <!-- 意见反馈 -->
-      <view class="action-item" bindtap="onFeedbackTap">
-        <image class="action-icon" src="/images/icons/feedback.svg" />
-        <view class="action-content">
-          <text class="action-title">意见反馈</text>
-          <text class="action-desc">告诉我们您的建议</text>
-        </view>
-        <image class="action-arrow" src="/images/icons/arrow-right.svg" />
-      </view>
-      
-      <!-- 设置 -->
-      <view class="action-item" bindtap="onSettingsTap">
-        <image class="action-icon" src="/images/icons/settings.svg" />
-        <view class="action-content">
-          <text class="action-title">设置</text>
-          <text class="action-desc">应用设置</text>
-        </view>
-        <image class="action-arrow" src="/images/icons/arrow-right.svg" />
-      </view>
+    <view class="section-header">
+      <view class="section-title">其他</view>
+    </view>
+    <view class="action-item" bindtap="onLogoutTap">
+      <view class="action-icon">🚪</view>
+      <view class="action-text">退出登录</view>
+      <view class="arrow-icon">></view>
+    </view>
+    <view class="action-item" bindtap="onAboutTap">
+      <view class="action-icon">ℹ️</view>
+      <view class="action-text">关于</view>
+      <view class="arrow-icon">></view>
     </view>
   </view>
 
-  <!-- 退出登录 -->
-  <view class="logout-section" wx:if="{{userInfo.isLoggedIn}}">
-    <button class="btn btn-error logout-btn" bindtap="onLogoutTap">退出登录</button>
+  <!-- 登录弹窗 -->
+  <view class="login-modal" wx:if="{{showLoginModal}}">
+    <view class="login-content">
+      <view class="login-title">登录暖圆小铺</view>
+      <view class="login-desc">通过微信登录，开始使用暖圆小铺</view>
+      <button 
+        class="login-btn" 
+        open-type="getUserInfo"
+        bindgetuserinfo="onGetUserInfo"
+      >
+        微信登录
+      </button>
+      <button class="cancel-btn" bindtap="closeLoginModal">取消</button>
+    </view>
   </view>
-
-  <!-- 登录按钮 -->
-  <view class="login-section" wx:else>
-    <button class="btn btn-primary login-btn" bindtap="onLoginTap">立即登录</button>
-  </view>
-
-  <!-- 确认弹窗 -->
-  <t-dialog
-    visible="{{showConfirmDialog}}"
-    title="{{confirmTitle}}"
-    content="{{confirmContent}}"
-    confirm-btn="{{confirmButton}}"
-    cancel-btn="取消"
-    bind:confirm="onConfirm"
-    bind:cancel="onCancel"
-  />
 </view>

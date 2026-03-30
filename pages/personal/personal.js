@@ -1,219 +1,172 @@
-// pages/personal/personal.js
-const app = getApp();
-const routes = require('../../constants/routes');
-
+// 个人中心逻辑
 Page({
   data: {
-    userInfo: null,
-    familyInfo: null,
-    isLoading: true,
-    // 菜单列表
-    menuItems: [
-      {
-        id: 'family',
-        icon: 'family',
-        title: '我的家庭',
-        description: '查看和管理家庭信息',
-        path: routes.PAGES.FAMILY_MANAGEMENT
-      },
-      {
-        id: 'favorites',
-        icon: 'favorite',
-        title: '收藏夹',
-        description: '查看收藏的菜品',
-        path: ''
-      },
-      {
-        id: 'history',
-        icon: 'history',
-        title: '历史记录',
-        description: '查看最近浏览的菜品',
-        path: ''
-      },
-      {
-        id: 'settings',
-        icon: 'settings',
-        title: '设置',
-        description: '应用设置和偏好',
-        path: ''
-      },
-      {
-        id: 'about',
-        icon: 'info',
-        title: '关于暖圆小铺',
-        description: '版本信息和帮助',
-        path: ''
-      }
-    ]
+    userInfo: {},
+    familyInfo: {},
+    showLoginModal: false
   },
 
-  onLoad(options) {
-    this.loadUserData();
+  onLoad() {
+    this.getUserInfo()
   },
 
   onShow() {
-    // 每次页面显示时刷新数据
-    this.loadUserData(false);
+    this.getUserInfo()
   },
 
-  // 加载用户数据
-  loadUserData(showLoading = true) {
-    if (showLoading) {
-      wx.showLoading({ title: '加载中...' });
-    }
-
-    // 获取用户信息
-    wx.getUserInfo({
-      success: (res) => {
-        this.setData({
-          userInfo: res.userInfo,
-          isLoading: false
-        });
-        this.loadFamilyInfo();
-      },
-      fail: (err) => {
-        console.warn('获取用户信息失败:', err);
-        this.setData({
-          isLoading: false
-        });
-        wx.showToast({
-          title: '请先登录',
-          icon: 'none'
-        });
-      },
-      complete: () => {
-        if (showLoading) {
-          wx.hideLoading();
-        }
-      }
-    });
-  },
-
-  // 加载家庭信息
-  loadFamilyInfo() {
-    const db = wx.cloud.database();
-    const userInfo = app.globalData.userInfo;
+  // 获取用户信息
+  getUserInfo() {
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
     
-    if (!userInfo || !userInfo.openid) {
-      return;
+    if (userInfo) {
+      this.setData({ userInfo })
+      if (userInfo.familyId) {
+        this.getFamilyInfo(userInfo.familyId)
+      }
+    } else {
+      this.setData({ userInfo: {} })
     }
+  },
 
-    db.collection('families').where({
-      members: db.command.elemMatch({
-        openid: userInfo.openid
+  // 获取家庭信息
+  getFamilyInfo(familyId) {
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'getFamilyInfo',
+        data: { familyId }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        this.setData({ familyInfo: res.result.data })
+      }
+    })
+    .catch(err => {
+      console.error('获取家庭信息失败:', err)
+    })
+  },
+
+  // 用户信息点击
+  onUserInfoTap() {
+    const app = getApp()
+    if (!app.globalData.userInfo || !app.globalData.userInfo.nickname) {
+      this.setData({ showLoginModal: true })
+    }
+  },
+
+  // 获取用户信息
+  onGetUserInfo(e) {
+    const userInfo = e.detail.userInfo
+    if (userInfo) {
+      wx.cloud.callFunction({
+        name: 'login',
+        data: {
+          userInfo
+        }
       })
-    }).get({
-      success: (res) => {
-        if (res.data.length > 0) {
-          this.setData({
-            familyInfo: res.data[0]
-          });
+      .then(res => {
+        if (res.result.success) {
+          const app = getApp()
+          app.globalData.userInfo = res.result.data
+          this.setData({ 
+            userInfo: res.result.data,
+            showLoginModal: false 
+          })
+          wx.showToast({
+            title: '登录成功',
+            icon: 'success'
+          })
         } else {
-          this.setData({
-            familyInfo: null
-          });
+          wx.showToast({
+            title: '登录失败',
+            icon: 'none'
+          })
         }
-      },
-      fail: (err) => {
-        console.error('加载家庭信息失败:', err);
+      })
+      .catch(err => {
+        console.error('登录失败:', err)
+        wx.showToast({
+          title: '网络错误',
+          icon: 'none'
+        })
+      })
+    }
+  },
+
+  // 关闭登录弹窗
+  closeLoginModal() {
+    this.setData({ showLoginModal: false })
+  },
+
+  // 复制邀请码
+  copyInviteCode() {
+    const inviteCode = this.data.familyInfo.inviteCode
+    if (inviteCode) {
+      wx.setClipboardData({
+        data: inviteCode,
+        success: () => {
+          wx.showToast({
+            title: '复制成功',
+            icon: 'success'
+          })
+        }
+      })
+    }
+  },
+
+  // 跳转到家庭管理
+  goToFamilyManagement() {
+    wx.navigateTo({
+      url: '/pages/family-management/family-management'
+    })
+  },
+
+  // 跳转到创建家庭
+  goToCreateFamily() {
+    wx.navigateTo({
+      url: '/pages/create-family/create-family'
+    })
+  },
+
+  // 跳转到加入家庭
+  goToJoinFamily() {
+    wx.navigateTo({
+      url: '/pages/join-family/join-family'
+    })
+  },
+
+  // 退出登录
+  onLogoutTap() {
+    wx.showModal({
+      title: '确认退出',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const app = getApp()
+          app.globalData.userInfo = null
+          app.globalData.familyInfo = null
+          this.setData({ 
+            userInfo: {},
+            familyInfo: {}
+          })
+          wx.removeStorageSync('userInfo')
+          wx.showToast({
+            title: '已退出登录',
+            icon: 'success'
+          })
+        }
       }
-    });
+    })
   },
 
-  // 处理菜单点击
-  handleMenuItemTap(e) {
-    const { id, path } = e.currentTarget.dataset;
-    
-    if (path) {
-      wx.navigateTo({
-        url: path
-      });
-    } else {
-      this.handleMenuAction(id);
-    }
-  },
-
-  // 处理菜单动作
-  handleMenuAction(id) {
-    switch (id) {
-      case 'favorites':
-        wx.showToast({
-          title: '收藏夹功能开发中',
-          icon: 'none'
-        });
-        break;
-      case 'history':
-        wx.showToast({
-          title: '历史记录功能开发中',
-          icon: 'none'
-        });
-        break;
-      case 'settings':
-        wx.showToast({
-          title: '设置功能开发中',
-          icon: 'none'
-        });
-        break;
-      case 'about':
-        wx.showToast({
-          title: '关于功能开发中',
-          icon: 'none'
-        });
-        break;
-      default:
-        break;
-    }
-  },
-
-  // 编辑个人信息
-  handleEditProfile() {
-    wx.showToast({
-      title: '编辑功能开发中',
-      icon: 'none'
-    });
-  },
-
-  // 创建或加入家庭
-  handleFamilyAction() {
-    if (this.data.familyInfo) {
-      // 已有家庭，跳转到家庭管理
-      wx.navigateTo({
-        url: routes.PAGES.FAMILY_MANAGEMENT
-      });
-    } else {
-      // 没有家庭，显示选择
-      wx.showActionSheet({
-        itemList: ['创建家庭', '加入家庭'],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            // 创建家庭
-            wx.navigateTo({
-              url: routes.PAGES.CREATE_FAMILY
-            });
-          } else if (res.tapIndex === 1) {
-            // 加入家庭
-            wx.navigateTo({
-              url: routes.PAGES.JOIN_FAMILY
-            });
-          }
-        }
-      });
-    }
-  },
-
-  // 分享个人中心
-  onShareAppMessage() {
-    return {
-      title: '暖圆小铺 - 家庭私房菜谱记录',
-      path: '/pages/index/index'
-    };
-  },
-
-  // 分享到朋友圈
-  onShareTimeline() {
-    return {
-      title: '暖圆小铺 - 记录家庭美食记忆',
-      query: ''
-    };
+  // 关于
+  onAboutTap() {
+    wx.showModal({
+      title: '关于暖圆小铺',
+      content: '暖圆小铺是一款聚焦家庭场景的轻量工具小程序，帮助家庭记录和分享私房菜谱，留住美食时光。\n\n版本：1.0.0',
+      showCancel: false
+    })
   }
-});
+})

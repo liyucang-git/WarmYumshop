@@ -1,44 +1,77 @@
-<!-- 菜品详情页 -->
+<!-- 暖圆小铺 - 菜品详情 -->
 <view class="page-container">
-  <view class="dish-detail">
-    <!-- 菜品图片 -->
-    <view class="dish-image-container" bindtap="onImageTap">
-      <image 
-        class="dish-image" 
-        src="{{dish.imageUrl || '/images/default-dish.png'}}"
-        mode="aspectFill"
-      />
-      <view class="image-overlay">
-        <text class="overlay-text">点击查看大图</text>
-      </view>
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-left" bindtap="onBack">
+      <view class="back-icon">←</view>
     </view>
-    
-    <!-- 菜品信息 -->
-    <view class="dish-info">
-      <view class="dish-name">{{dish.name}}</view>
-      <view class="dish-categories">
-        <view 
-          wx:for="{{dish.categories}}"
-          wx:key="index"
-          class="category-tag"
-        >
-          <text class="tag-text">{{item}}</text>
-        </view>
-      </view>
-      <view class="dish-time">
-        <text class="time-label">添加时间：</text>
-        <text class="time-value">{{dish.createTime}}</text>
-      </view>
-      <view class="dish-description" wx:if="{{dish.description}}">
-        <text class="description-label">菜品描述：</text>
-        <text class="description-content">{{dish.description}}</text>
-      </view>
-    </view>
-    
-    <!-- 操作按钮 -->
-    <view class="action-buttons">
-      <button class="btn btn-primary" bindtap="onEditTap">编辑菜品</button>
-      <button class="btn btn-error" bindtap="onDeleteTap">删除菜品</button>
+    <view class="header-title">{{dish.name || '菜品详情'}}</view>
+    <view class="header-right" bindtap="showActionMenu">
+      <view class="action-icon">•••</view>
     </view>
   </view>
+
+  <!-- 菜品图片 -->
+  <view class="image-container" bindtap="previewImage">
+    <image 
+      class="dish-image" 
+      src="{{dish.imageUrl || '/images/default-dish.png'}}"
+      mode="aspectFill"
+    />
+    <view class="preview-hint">点击查看大图</view>
+  </view>
+
+  <!-- 菜品信息 -->
+  <view class="info-container">
+    <!-- 菜名 -->
+    <view class="dish-name">{{dish.name}}</view>
+    
+    <!-- 分类标签 -->
+    <view class="dish-categories">
+      <view 
+        wx:for="{{dish.categories}}"
+        wx:key="index"
+        class="category-tag"
+      >
+        <text class="category-text">{{item}}</text>
+      </view>
+    </view>
+    
+    <!-- 时间信息 -->
+    <view class="time-info" wx:if="{{dish.createTime}}">
+      <text class="time-icon">🕐</text>
+      <text class="time-text">添加时间：{{formatTime(dish.createTime)}}</text>
+    </view>
+    
+    <!-- 描述 -->
+    <view class="dish-description" wx:if="{{dish.description}}">
+      <view class="desc-title">描述</view>
+      <view class="desc-content">{{dish.description}}</view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view class="btn btn-primary" bindtap="onEdit">编辑</view>
+    <view class="btn btn-secondary" bindtap="onDelete">删除</view>
+  </view>
+
+  <!-- 操作菜单 -->
+  <t-action-sheet
+    visible="{{showActionSheet}}"
+    items="{{actionItems}}"
+    bind:close="onActionSheetClose"
+    bind:selected="onActionSheetSelect"
+  />
+
+  <!-- 确认删除弹窗 -->
+  <t-dialog
+    visible="{{showDeleteDialog}}"
+    title="确认删除"
+    content="确定要删除这个菜品吗？删除后无法恢复。"
+    confirm-btn="删除"
+    cancel-btn="取消"
+    bind:confirm="onDeleteConfirm"
+    bind:cancel="onDeleteCancel"
+  />
 </view>

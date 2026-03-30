@@ -1,57 +1,45 @@
-<!-- pages/join-family/join-family.wxml -->
-<view class="container">
+<!-- 暖圆小铺 - 加入家庭 -->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
   <view class="header">
-    <text class="title">加入家庭</text>
+    <view class="header-left" bindtap="onCancel">
+      <view class="back-icon">←</view>
+    </view>
+    <view class="header-title">加入家庭</view>
+    <view class="header-right" bindtap="onJoin">
+      <view class="join-btn">加入</view>
+    </view>
   </view>
 
+  <!-- 表单区域 -->
   <view class="form-container">
-    <view class="input-section">
-      <text class="label">输入家庭邀请码</text>
+    <view class="form-item">
+      <view class="form-label">邀请码</view>
       <input 
-        class="input" 
-        placeholder="请输入6位邀请码" 
-        value="{{inviteCode}}" 
-        bindinput="onInputChange" 
+        class="form-input" 
+        placeholder="请输入家庭邀请码"
+        value="{{inviteCode}}"
+        bindinput="onInviteCodeInput"
         maxlength="6"
       />
-      <text class="hint">邀请码由家庭创建者提供</text>
+      <view class="form-hint">邀请码由6位字母和数字组成</view>
     </view>
 
-    <view class="or-divider">
-      <view class="line"></view>
-      <text class="or-text">或者</text>
-      <view class="line"></view>
-    </view>
-
-    <view class="scan-section">
-      <button class="scan-btn" bindtap="scanQRCode">
-        <text class="scan-icon">📷</text>
-        <text class="scan-text">扫描二维码加入</text>
-      </button>
-    </view>
-
-    <view wx:if="{{familyInfo}}" class="family-info">
-      <view class="info-card">
-        <text class="info-title">家庭信息</text>
-        <view class="info-item">
-          <text class="info-label">家庭名称</text>
-          <text class="info-value">{{familyInfo.name}}</text>
-        </view>
-        <view class="info-item">
-          <text class="info-label">创建者</text>
-          <text class="info-value">{{familyInfo.creator}}</text>
-        </view>
-        <view class="info-item">
-          <text class="info-label">成员数量</text>
-          <text class="info-value">{{familyInfo.memberCount}}人</text>
-        </view>
+    <view class="tips">
+      <view class="tips-title">如何获取邀请码？</view>
+      <view class="tips-list">
+        <view class="tips-item">• 联系家庭创建者</view>
+        <view class="tips-item">• 家庭创建者可在个人中心查看邀请码</view>
+        <view class="tips-item">• 邀请码长期有效</view>
       </view>
     </view>
   </view>
 
-  <view class="action-buttons">
-    <button class="join-btn" bindtap="onJoinFamily" loading="{{isLoading}}">
-      {{isLoading ? '验证中...' : '加入家庭'}}
-    </button>
+  <!-- 加载中 -->
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加入中...</text>
+    </view>
   </view>
 </view>

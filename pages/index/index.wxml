@@ -2,9 +2,8 @@
 <view class="page-container">
   <!-- 顶部导航栏 -->
   <view class="header">
-    <view class="header-title">暖圆小铺</view>
-    <view class="header-actions">
-      <!-- 视图切换按钮 -->
+    <view class="header-content">
+      <view class="header-title">暖圆小铺</view>
       <view class="action-btn" bindtap="toggleViewMode">
         <image 
           class="action-icon" 
@@ -12,46 +11,49 @@
           mode="aspectFit"
         />
       </view>
-      <!-- 排序按钮 -->
-      <view class="action-btn" bindtap="toggleSortOrder">
-        <image 
-          class="action-icon" 
-          src="{{sortOrder === 'desc' ? '/images/icons/sort-desc.svg' : '/images/icons/sort-asc.svg'}}"
-          mode="aspectFit"
-        />
-      </view>
     </view>
-  </view>
 
-  <!-- 分类筛选区 -->
-  <scroll-view 
-    class="category-scroll" 
-    scroll-x 
-    scroll-with-animation
-    scroll-left="{{categoryScrollLeft}}"
-  >
-    <view class="category-list">
-      <!-- 全部选项 -->
-      <view 
-        class="category-item {{activeCategory === 'all' ? 'active' : ''}}"
-        bindtap="onCategoryTap"
-        data-category="all"
-      >
-        <text class="category-text">全部</text>
-      </view>
-      
-      <!-- 分类选项 -->
-      <view 
-        wx:for="{{categories}}"
-        wx:key="id"
-        class="category-item {{activeCategory === item.id ? 'active' : ''}}"
-        bindtap="onCategoryTap"
-        data-category="{{item.id}}"
-      >
-        <text class="category-text">{{item.name}}</text>
-      </view>
+    <!-- 搜索框 -->
+    <view class="search-box">
+      <image class="search-icon" src="/images/icons/search.svg" mode="aspectFit" />
+      <input 
+        class="search-input" 
+        placeholder="搜索菜品..." 
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+      />
     </view>
-  </scroll-view>
+
+    <!-- 分类筛选区 -->
+    <scroll-view 
+      class="category-scroll" 
+      scroll-x 
+      scroll-with-animation
+      scroll-left="{{categoryScrollLeft}}"
+    >
+      <view class="category-list">
+        <!-- 全部选项 -->
+        <view 
+          class="category-item {{activeCategory === 'all' ? 'active' : ''}}"
+          bindtap="onCategoryTap"
+          data-category="all"
+        >
+          <text class="category-text">全部</text>
+        </view>
+        
+        <!-- 分类选项 -->
+        <view 
+          wx:for="{{categories}}"
+          wx:key="index"
+          class="category-item {{activeCategory === item ? 'active' : ''}}"
+          bindtap="onCategoryTap"
+          data-category="{{item}}"
+        >
+          <text class="category-text">{{item}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
 
   <!-- 菜品列表区 -->
   <scroll-view 
@@ -65,13 +67,9 @@
   >
     <!-- 空状态 -->
     <view wx:if="{{isEmpty}}" class="empty-container">
-      <image 
-        class="empty-image" 
-        src="/images/empty-dish.png"
-        mode="aspectFit"
-      />
-      <view class="empty-text">快来添加第一道拿手好菜吧</view>
-      <view class="empty-action">
+      <view class="empty-icon">🍳</view>
+      <view class="empty-text">{{searchQuery ? '没有找到相关菜品' : '快来添加第一道拿手好菜吧'}}</view>
+      <view class="empty-action" wx:if="{{!searchQuery}}">
         <button 
           class="btn btn-primary empty-btn"
           bindtap="onAddDishTap"
@@ -170,14 +168,14 @@
           <!-- 分类标签 -->
           <view class="list-tags">
             <view 
-              wx:for="{{item.categories.slice(0, 2)}}"
+              wx:for="{{item.categories.slice(0, 3)}}"
               wx:key="index"
               class="list-tag"
             >
               <text class="list-tag-text">{{item}}</text>
             </view>
-            <text class="more-tag" wx:if="{{item.categories.length > 2}}">
-              +{{item.categories.length - 2}}
+            <text class="more-tag" wx:if="{{item.categories.length > 3}}">
+              +{{item.categories.length - 3}}
             </text>
           </view>
           
@@ -206,21 +204,23 @@
   </view>
 
   <!-- 操作菜单 -->
-  <t-action-sheet
-    visible="{{showActionSheet}}"
-    items="{{actionItems}}"
-    bind:close="onActionSheetClose"
-    bind:selected="onActionSheetSelect"
-  />
+  <action-sheet
+    hidden="{{!showActionSheet}}"
+    bindchange="onActionSheetClose"
+  >
+    <action-sheet-item bindtap="onEditDish">编辑</action-sheet-item>
+    <action-sheet-item bindtap="onDeleteDish">删除</action-sheet-item>
+    <action-sheet-cancel bindtap="onActionSheetClose">取消</action-sheet-cancel>
+  </action-sheet>
 
   <!-- 确认删除弹窗 -->
-  <t-dialog
-    visible="{{showDeleteDialog}}"
+  <modal
+    hidden="{{!showDeleteDialog}}"
     title="确认删除"
     content="确定要删除这个菜品吗？删除后无法恢复。"
-    confirm-btn="删除"
-    cancel-btn="取消"
-    bind:confirm="onDeleteConfirm"
-    bind:cancel="onDeleteCancel"
+    confirm-text="删除"
+    cancel-text="取消"
+    bindconfirm="onDeleteConfirm"
+    bindcancel="onDeleteCancel"
   />
 </view>

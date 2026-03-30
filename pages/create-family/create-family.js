@@ -1,68 +1,83 @@
-// pages/create-family/create-family.js
-const app = getApp();
-
+// 创建家庭逻辑
 Page({
   data: {
-    formData: {
-      name: '',
-      description: ''
-    },
-    isSubmitting: false
+    familyName: '',
+    loading: false
   },
 
-  onLoad(options) {
-    // 页面初始化
-  },
-
-  // 输入框变化
-  onInputChange(e) {
-    const { field } = e.currentTarget.dataset;
-    const value = e.detail.value;
-    
-    this.setData({
-      [`formData.${field}`]: value
-    });
+  // 家庭名称输入
+  onFamilyNameInput(e) {
+    this.setData({ familyName: e.detail.value })
   },
 
   // 创建家庭
-  onCreateFamily() {
-    const { formData } = this.data;
+  onCreate() {
+    const familyName = this.data.familyName.trim()
     
-    if (!formData.name.trim()) {
+    // 验证
+    if (!familyName) {
       wx.showToast({
         title: '请输入家庭名称',
         icon: 'none'
-      });
-      return;
+      })
+      return
+    }
+    
+    if (familyName.length < 2 || familyName.length > 20) {
+      wx.showToast({
+        title: '家庭名称长度应在2-20个字符之间',
+        icon: 'none'
+      })
+      return
     }
 
-    this.setData({ isSubmitting: true });
-    wx.showLoading({ title: '创建中...' });
+    this.setData({ loading: true })
+    const app = getApp()
+    const userInfo = app.globalData.userInfo
 
-    // 模拟创建过程
-    setTimeout(() => {
-      wx.hideLoading();
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'createFamily',
+        data: {
+          name: familyName,
+          creatorId: userInfo._id
+        }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        // 更新用户信息
+        app.globalData.userInfo.familyId = res.result.data._id
+        app.globalData.userInfo.role = 'creator'
+        app.globalData.familyInfo = res.result.data
+        
+        wx.showToast({
+          title: '创建成功',
+          icon: 'success'
+        })
+        wx.navigateBack()
+      } else {
+        wx.showToast({
+          title: '创建失败',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('创建家庭失败:', err)
       wx.showToast({
-        title: '家庭创建成功！',
-        icon: 'success'
-      });
-
-      // 跳转到家庭管理页面
-      setTimeout(() => {
-        wx.redirectTo({
-          url: '/pages/family-management/family-management'
-        });
-      }, 1500);
-    }, 2000);
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ loading: false })
+    })
   },
 
-  // 重置表单
-  onReset() {
-    this.setData({
-      formData: {
-        name: '',
-        description: ''
-      }
-    });
+  // 取消
+  onCancel() {
+    wx.navigateBack()
   }
-});
+})
