@@ -65,13 +65,14 @@
   </view>
 
   <!-- 确认弹窗 -->
-  <t-dialog
-    visible="{{showConfirmDialog}}"
+  <modal
     title="{{confirmDialogTitle}}"
-    content="{{confirmDialogContent}}"
-    confirm-btn="确认"
-    cancel-btn="取消"
-    bind:confirm="onConfirmAction"
-    bind:cancel="onCancelAction"
-  />
+    confirm-text="确认"
+    cancel-text="取消"
+    hidden="{{!showConfirmDialog}}"
+    bindconfirm="onConfirmAction"
+    bindcancel="onCancelAction"
+  >
+    {{confirmDialogContent}}
+  </modal>
 </view>
