@@ -154,6 +154,17 @@ Page({
 
     // 检查登录状态
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      wx.showToast({
+        title: '系统错误',
+        icon: 'none'
+      })
+      return
+    }
+    
     if (!app.globalData.userInfo) {
       wx.showToast({
         title: '请先登录',

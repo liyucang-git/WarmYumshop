@@ -4,26 +4,38 @@ App({
     // 初始化云开发
     if (wx.cloud) {
       wx.cloud.init({
+        env: 'tangyuan-3gqjbda947233e77',
         traceUser: true
       })
+      console.log('云开发初始化成功，环境ID: tangyuan-3gqjbda947233e77')
+    } else {
+      console.error('云开发 SDK 未加载')
     }
-    
+
     // 检查登录状态
     this.checkLoginStatus()
   },
-  
+
   checkLoginStatus() {
-    wx.getStorage({  
-      key: 'userInfo',
-      success: (res) => {
-        this.globalData.userInfo = res.data
-      },
-      fail: () => {
-        // 未登录，后续在个人中心页处理
-      }
-    })
+    try {
+      wx.getStorage({
+        key: 'userInfo',
+        success: (res) => {
+          if (res && res.data) {
+            this.globalData.userInfo = res.data
+            console.log('已登录用户:', res.data)
+          }
+        },
+        fail: () => {
+          // 未登录，后续在个人中心页处理
+          console.log('未找到登录信息')
+        }
+      })
+    } catch (error) {
+      console.error('检查登录状态失败:', error)
+    }
   },
-  
+
   globalData: {
     userInfo: null,
     familyInfo: null,

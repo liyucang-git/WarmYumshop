@@ -32,6 +32,14 @@ Page({
   // 获取菜品列表
   getDishes() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      this.setData({ dishList: [], isEmpty: true })
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
     
     if (!userInfo || !userInfo.familyId) {

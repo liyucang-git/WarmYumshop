@@ -33,6 +33,18 @@ Page({
 
     this.setData({ loading: true })
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData || !app.globalData.userInfo) {
+      console.error('app 或 app.globalData 未初始化')
+      this.setData({ loading: false })
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
 
     wx.cloud.callFunction({

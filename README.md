@@ -44,6 +44,35 @@ WarmYumshop/
 └── 暖圆小铺需求文档.md   # 项目需求文档
 ```
 
+## 部署信息
+
+### 云开发环境
+- **环境 ID**: `tangyuan-3gqjbda947233e77`
+- **区域**: `ap-shanghai`
+- **状态**: 已配置并运行中
+
+### 已部署资源
+
+#### 云函数
+- `login` - 用户登录认证
+- `family` - 家庭管理
+- `dish` - 菜品管理
+
+#### 数据库集合
+- `users` - 用户信息
+- `families` - 家庭信息
+- `dishes` - 菜品信息
+
+#### 数据库安全规则
+- `users`: 用户只能读写自己的数据
+- `families`: 家庭成员可以读写家庭数据
+- `dishes`: 所有用户可读取，已登录用户可写入
+
+### 控制台入口
+- [云开发控制台](https://tcb.cloud.tencent.com/dev?envId=tangyuan-3gqjbda947233e77)
+- [云函数管理](https://tcb.cloud.tencent.com/dev?envId=tangyuan-3gqjbda947233e77#/scf)
+- [数据库管理](https://tcb.cloud.tencent.com/dev?envId=tangyuan-3gqjbda947233e77#/db/doc)
+
 ## 安装和运行
 
 ### 前置条件

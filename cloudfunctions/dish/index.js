@@ -1,15 +1,18 @@
 // 菜品管理云函数
 const cloud = require('wx-server-sdk')
 
+// 使用显式的环境ID初始化
 cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV
+  env: 'tangyuan-3gqjbda947233e77'
 })
 
 const db = cloud.database()
 const dishesCollection = db.collection('dishes')
-const storage = cloud.storage()
+
+console.log('dish云函数初始化完成')
 
 exports.main = async (event, context) => {
+  console.log('dish云函数被调用:', event)
   try {
     const { action, data } = event
     
@@ -38,32 +41,49 @@ exports.main = async (event, context) => {
       
       case 'getDishes': {
         const { familyId, category, searchQuery, sortBy } = data
-        
+
+        console.log('getDishes 参数:', { familyId, category, searchQuery, sortBy })
+
+        if (!familyId) {
+          return {
+            success: false,
+            error: 'familyId 不能为空'
+          }
+        }
+
         let query = dishesCollection.where({ familyId })
-        
+
         // 分类筛选
-        if (category && category !== 'all') {
+        if (category && category !== 'all' && category !== '') {
           query = query.where({
-            categories: db.command.includes(category)
+            categories: db.RegExp({
+              regexp: category,
+              options: 'i'
+            })
           })
         }
-        
+
         // 搜索筛选
-        if (searchQuery) {
+        if (searchQuery && searchQuery.trim()) {
           query = query.where({
-            name: db.command.regex({ regex: searchQuery, options: 'i' })
+            name: db.RegExp({
+              regexp: searchQuery,
+              options: 'i'
+            })
           })
         }
-        
+
         // 排序
         if (sortBy === 'latest') {
           query = query.orderBy('createTime', 'desc')
         } else if (sortBy === 'oldest') {
           query = query.orderBy('createTime', 'asc')
         }
-        
+
+        console.log('开始查询数据库...')
         const result = await query.get()
-        
+        console.log('查询结果:', result)
+
         return {
           success: true,
           data: result.data

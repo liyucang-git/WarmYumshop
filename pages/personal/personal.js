@@ -17,6 +17,14 @@ Page({
   // 获取用户信息
   getUserInfo() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      this.setData({ userInfo: {} })
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
     
     if (userInfo) {
@@ -51,6 +59,14 @@ Page({
   // 用户信息点击
   onUserInfoTap() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      this.setData({ showLoginModal: true })
+      return
+    }
+    
     if (!app.globalData.userInfo || !app.globalData.userInfo.nickname) {
       this.setData({ showLoginModal: true })
     }
@@ -145,8 +161,13 @@ Page({
       success: (res) => {
         if (res.confirm) {
           const app = getApp()
-          app.globalData.userInfo = null
-          app.globalData.familyInfo = null
+          
+          // 安全检查: 确保 app 和 globalData 存在
+          if (app && app.globalData) {
+            app.globalData.userInfo = null
+            app.globalData.familyInfo = null
+          }
+          
           this.setData({ 
             userInfo: {},
             familyInfo: {}

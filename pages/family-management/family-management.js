@@ -18,6 +18,13 @@ Page({
   // 获取家庭信息
   getFamilyInfo() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
     
     if (userInfo && userInfo.familyId) {
@@ -118,6 +125,13 @@ Page({
   onConfirmAction() {
     const { actionType, targetUserId } = this.data
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData) {
+      console.error('app 或 app.globalData 未初始化')
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
 
     switch (actionType) {
@@ -178,6 +192,13 @@ Page({
   // 确认离开家庭
   leaveFamilyConfirm() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData || !app.globalData.userInfo) {
+      console.error('app 或 app.globalData.userInfo 未初始化')
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
     const familyId = userInfo.familyId
     
@@ -222,6 +243,13 @@ Page({
   // 确认解散家庭
   dissolveFamilyConfirm() {
     const app = getApp()
+    
+    // 安全检查: 确保 app 和 globalData 存在
+    if (!app || !app.globalData || !app.globalData.userInfo) {
+      console.error('app 或 app.globalData.userInfo 未初始化')
+      return
+    }
+    
     const userInfo = app.globalData.userInfo
     const familyId = userInfo.familyId
     
