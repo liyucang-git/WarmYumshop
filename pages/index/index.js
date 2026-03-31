@@ -81,8 +81,6 @@ Page({
               console.log(`dish ${index} categories is not array, setting to empty array`)
               dish.categories = []
             }
-            // 初始化imageLoaded字段
-            dish.imageLoaded = false
             console.log(`dish ${index} processed categories:`, dish.categories)
           })
         }
@@ -248,14 +246,6 @@ Page({
     const index = e.currentTarget.dataset.index
     const dishList = [...this.data.dishList]
     dishList[index].imageUrl = '/images/default-dish.png'
-    this.setData({ dishList })
-  },
-
-  // 图片加载完成
-  onImageLoad(e) {
-    const index = e.currentTarget.dataset.index
-    const dishList = [...this.data.dishList]
-    dishList[index].imageLoaded = true
     this.setData({ dishList })
   },
 

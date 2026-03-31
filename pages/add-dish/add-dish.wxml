@@ -49,14 +49,14 @@
     <view class="form-item">
       <view class="form-label">菜品分类</view>
       <view class="category-selector">
-        <view 
-          wx:for="{{categories}}"
-          wx:key="index"
-          class="category-item {{selectedCategories.indexOf(item) > -1 ? 'selected' : ''}}"
+        <view
+          wx:for="{{categoryWithSelection}}"
+          wx:key="name"
+          class="category-item {{item.selected ? 'selected' : ''}}"
           bindtap="toggleCategory"
-          data-category="{{item}}"
+          data-category="{{item.name}}"
         >
-          <text class="category-text">{{item}}</text>
+          <text class="category-text">{{item.name}}</text>
         </view>
       </view>
     </view>

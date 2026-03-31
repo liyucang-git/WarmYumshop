@@ -16,6 +16,14 @@ Page({
     }
   },
 
+  onShow() {
+    // 页面显示时重新加载数据，用于编辑后刷新
+    const dishId = this.data.dish._id
+    if (dishId) {
+      this.getDishDetail(dishId)
+    }
+  },
+
   // 获取菜品详情
   getDishDetail(dishId) {
     wx.cloud.callFunction({
@@ -69,13 +77,13 @@ Page({
 
   // 操作菜单关闭
   onActionSheetChange(e) {
-    if (!e.detail.value) {
-      this.setData({ showActionSheet: false })
-    }
+    // action-sheet 的 change 事件在点击取消或遮罩层时触发
+    this.setData({ showActionSheet: false })
   },
 
   // 编辑
   onEdit() {
+    this.setData({ showActionSheet: false })
     wx.navigateTo({
       url: `/pages/add-dish/add-dish?id=${this.data.dish._id}`
     })
@@ -83,6 +91,7 @@ Page({
 
   // 删除
   onDelete() {
+    this.setData({ showActionSheet: false })
     this.setData({ showDeleteDialog: true })
   },
 

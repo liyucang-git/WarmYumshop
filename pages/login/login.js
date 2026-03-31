@@ -39,7 +39,7 @@ Page({
   // 获取用户信息
   onGetUserInfo(e) {
     const userInfo = e.detail.userInfo
-    
+    console.log('userInfo', userInfo)
     if (!userInfo) {
       wx.showToast({
         title: '需要授权才能继续使用',

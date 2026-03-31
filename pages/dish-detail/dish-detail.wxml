@@ -6,9 +6,7 @@
       <view class="back-icon">←</view>
     </view>
     <view class="header-title">{{dish.name || '菜品详情'}}</view>
-    <view class="header-right" bindtap="showActionMenu">
-      <view class="action-icon">•••</view>
-    </view>
+    <view class="header-right"></view>
   </view>
 
   <!-- 菜品图片 -->

@@ -104,13 +104,8 @@
             mode="aspectFill"
             lazy-load="{{true}}"
             binderror="onImageError"
-            bindload="onImageLoad"
             data-index="{{index}}"
           />
-          <!-- 加载占位 -->
-          <view class="image-placeholder" wx:if="{{!item.imageLoaded}}">
-            <view class="placeholder-content"></view>
-          </view>
         </view>
         
         <!-- 菜品信息 -->

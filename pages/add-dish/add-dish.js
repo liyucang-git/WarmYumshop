@@ -8,14 +8,31 @@ Page({
     categories: ['家常菜', '汤羹', '主食', '甜品', '凉菜', '热菜', '面食', '其他'],
     loading: false,
     isEdit: false,
-    dishId: ''
+    dishId: '',
+    categoryWithSelection: []
+  },
+
+  // 检查分类是否被选中
+  isCategorySelected(category) {
+    return this.data.selectedCategories.includes(category)
   },
 
   onLoad(options) {
+    this.updateCategorySelection()
     if (options.id) {
       this.setData({ isEdit: true, dishId: options.id })
       this.getDishDetail(options.id)
     }
+  },
+
+  // 更新分类选中状态
+  updateCategorySelection() {
+    const { categories, selectedCategories } = this.data
+    const categoryWithSelection = categories.map(cat => ({
+      name: cat,
+      selected: selectedCategories.indexOf(cat) >= 0
+    }))
+    this.setData({ categoryWithSelection })
   },
 
   // 获取菜品详情
@@ -28,13 +45,21 @@ Page({
       }
     })
     .then(res => {
+      console.log('获取菜品详情结果:', res)
       if (res.result.success) {
         const dish = res.result.data
+        console.log('菜品详情数据:', dish)
+        console.log('菜品分类:', dish.categories)
+        console.log('分类类型:', typeof dish.categories)
+        console.log('是否为数组:', Array.isArray(dish.categories))
         this.setData({
           dishName: dish.name,
           selectedCategories: dish.categories,
           dishDescription: dish.description,
           imageUrl: dish.imageUrl
+        }, () => {
+          console.log('设置后的 selectedCategories:', this.data.selectedCategories)
+          this.updateCategorySelection()
         })
       } else {
         wx.showToast({
@@ -113,14 +138,25 @@ Page({
   // 切换分类
   toggleCategory(e) {
     const category = e.currentTarget.dataset.category
-    let selectedCategories = this.data.selectedCategories
+    console.log('点击分类:', category)
+    console.log('当前 selectedCategories:', this.data.selectedCategories)
+
+    let selectedCategories = [...this.data.selectedCategories]
     const index = selectedCategories.indexOf(category)
+    console.log('分类在数组中的索引:', index)
+
     if (index > -1) {
       selectedCategories = selectedCategories.filter(item => item !== category)
+      console.log('移除分类，新的 selectedCategories:', selectedCategories)
     } else {
-      selectedCategories = [...selectedCategories, category]
+      selectedCategories.push(category)
+      console.log('添加分类，新的 selectedCategories:', selectedCategories)
     }
-    this.setData({ selectedCategories })
+
+    this.setData({ selectedCategories }, () => {
+      console.log('setData 完成，当前 selectedCategories:', this.data.selectedCategories)
+      this.updateCategorySelection()
+    })
   },
 
   // 保存
