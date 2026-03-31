@@ -1,12 +1,9 @@
 // 家庭管理云函数
-const cloud = require('wx-server-sdk')
+const tcb = require('@cloudbase/node-sdk')
 
-// 使用显式的环境ID初始化
-cloud.init({
-  env: 'tangyuan-3gqjbda947233e77'
-})
-
-const db = cloud.database()
+// 初始化
+const app = tcb.init({ env: 'tangyuan-3gqjbda947233e77' })
+const db = app.database()
 const familiesCollection = db.collection('families')
 const usersCollection = db.collection('users')
 
@@ -50,17 +47,15 @@ exports.main = async (event, context) => {
         }
 
         console.log('插入家庭数据:', newFamily)
-        const addResult = await familiesCollection.add({ data: newFamily })
-        newFamily._id = addResult._id
+        const addResult = await familiesCollection.add(newFamily)
+        newFamily._id = addResult.id
         console.log('家庭创建成功, ID:', newFamily._id)
 
         // 更新用户信息
         await usersCollection.doc(creatorId).update({
-          data: {
-            familyId: newFamily._id,
-            role: 'creator',
-            joinTime: new Date()
-          }
+          familyId: newFamily._id,
+          role: 'creator',
+          joinTime: new Date()
         })
 
         return {
@@ -87,7 +82,7 @@ exports.main = async (event, context) => {
 
         // 检查用户是否已在家庭中
         const userResult = await usersCollection.doc(userId).get()
-        if (userResult.data.familyId) {
+        if (userResult.data.length > 0 && userResult.data[0].familyId) {
           return {
             success: false,
             error: '您已加入其他家庭'
@@ -96,25 +91,21 @@ exports.main = async (event, context) => {
 
         // 更新家庭成员 - 先获取现有成员
         const currentFamily = await familiesCollection.doc(family._id).get()
-        const currentMembers = currentFamily.data.members || []
+        const currentMembers = currentFamily.data[0].members || []
         currentMembers.push({
           userId,
           joinTime: new Date()
         })
         
         await familiesCollection.doc(family._id).update({
-          data: {
-            members: currentMembers
-          }
+          members: currentMembers
         })
 
         // 更新用户信息
         await usersCollection.doc(userId).update({
-          data: {
-            familyId: family._id,
-            role: 'member',
-            joinTime: new Date()
-          }
+          familyId: family._id,
+          role: 'member',
+          joinTime: new Date()
         })
 
         return {
@@ -129,7 +120,7 @@ exports.main = async (event, context) => {
         console.log('获取家庭信息:', familyId)
 
         const familyResult = await familiesCollection.doc(familyId).get()
-        if (!familyResult.data) {
+        if (!familyResult.data || familyResult.data.length === 0) {
           return {
             success: false,
             error: '家庭不存在'
@@ -138,7 +129,7 @@ exports.main = async (event, context) => {
 
         return {
           success: true,
-          data: familyResult.data
+          data: familyResult.data[0]
         }
       }
 
@@ -147,7 +138,7 @@ exports.main = async (event, context) => {
 
         // 检查成员是否存在
         const familyResult = await familiesCollection.doc(familyId).get()
-        if (!familyResult.data) {
+        if (!familyResult.data || familyResult.data.length === 0) {
           return {
             success: false,
             error: '家庭不存在'
@@ -156,22 +147,18 @@ exports.main = async (event, context) => {
 
         // 移除成员 - 先获取现有成员
         const currentFamily = await familiesCollection.doc(familyId).get()
-        const currentMembers = currentFamily.data.members || []
+        const currentMembers = currentFamily.data[0].members || []
         const newMembers = currentMembers.filter(member => member.userId !== memberId)
         
         await familiesCollection.doc(familyId).update({
-          data: {
-            members: newMembers
-          }
+          members: newMembers
         })
 
         // 清除用户家庭信息
         await usersCollection.doc(memberId).update({
-          data: {
-            familyId: '',
-            role: '',
-            joinTime: ''
-          }
+          familyId: '',
+          role: '',
+          joinTime: ''
         })
 
         return {
@@ -184,23 +171,21 @@ exports.main = async (event, context) => {
 
         // 获取家庭信息
         const familyResult = await familiesCollection.doc(familyId).get()
-        if (!familyResult.data) {
+        if (!familyResult.data || familyResult.data.length === 0) {
           return {
             success: false,
             error: '家庭不存在'
           }
         }
 
-        const family = familyResult.data
+        const family = familyResult.data[0]
 
         // 清除所有成员的家庭信息
         for (const member of family.members) {
           await usersCollection.doc(member.userId).update({
-            data: {
-              familyId: '',
-              role: '',
-              joinTime: ''
-            }
+            familyId: '',
+            role: '',
+            joinTime: ''
           })
         }
 
@@ -217,7 +202,7 @@ exports.main = async (event, context) => {
 
         // 检查用户是否是创建者
         const userResult = await usersCollection.doc(userId).get()
-        if (userResult.data.role === 'creator') {
+        if (userResult.data.length > 0 && userResult.data[0].role === 'creator') {
           return {
             success: false,
             error: '创建者不能离开家庭，请先解散家庭'
@@ -226,22 +211,18 @@ exports.main = async (event, context) => {
 
         // 移除成员 - 先获取现有成员
         const currentFamily = await familiesCollection.doc(familyId).get()
-        const currentMembers = currentFamily.data.members || []
+        const currentMembers = currentFamily.data[0].members || []
         const newMembers = currentMembers.filter(member => member.userId !== userId)
         
         await familiesCollection.doc(familyId).update({
-          data: {
-            members: newMembers
-          }
+          members: newMembers
         })
 
         // 清除用户家庭信息
         await usersCollection.doc(userId).update({
-          data: {
-            familyId: '',
-            role: '',
-            joinTime: ''
-          }
+          familyId: '',
+          role: '',
+          joinTime: ''
         })
 
         return {

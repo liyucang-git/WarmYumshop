@@ -1,7 +1,8 @@
 // 登录页逻辑
 Page({
   data: {
-    loading: false
+    loading: false,
+    isNavigating: false
   },
 
   // 页面加载
@@ -11,14 +12,26 @@ Page({
     if (app.globalData && app.globalData.userInfo) {
       // 已登录且已加入家庭，跳转到首页
       if (app.globalData.userInfo.familyId) {
-        wx.switchTab({
-          url: '/pages/index/index'
-        })
+        if (!this.data.isNavigating) {
+          this.setData({ isNavigating: true })
+          wx.switchTab({
+            url: '/pages/index/index',
+            fail: () => {
+              this.setData({ isNavigating: false })
+            }
+          })
+        }
       } else {
         // 已登录但未加入家庭，跳转到个人中心
-        wx.switchTab({
-          url: '/pages/personal/personal'
-        })
+        if (!this.data.isNavigating) {
+          this.setData({ isNavigating: true })
+          wx.switchTab({
+            url: '/pages/personal/personal',
+            fail: () => {
+              this.setData({ isNavigating: false })
+            }
+          })
+        }
       }
     }
   },
@@ -63,9 +76,15 @@ Page({
           })
           // 新用户跳转到个人中心引导创建家庭
           setTimeout(() => {
-            wx.switchTab({
-              url: '/pages/personal/personal'
-            })
+            if (!this.data.isNavigating) {
+              this.setData({ isNavigating: true })
+              wx.switchTab({
+                url: '/pages/personal/personal',
+                fail: () => {
+                  this.setData({ isNavigating: false })
+                }
+              })
+            }
           }, 1500)
         } else {
           // 老用户
@@ -76,9 +95,15 @@ Page({
               icon: 'success'
             })
             setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/index/index'
-              })
+              if (!this.data.isNavigating) {
+                this.setData({ isNavigating: true })
+                wx.switchTab({
+                  url: '/pages/index/index',
+                  fail: () => {
+                    this.setData({ isNavigating: false })
+                  }
+                })
+              }
             }, 1500)
           } else {
             // 未加入家庭，跳转到个人中心
@@ -87,9 +112,15 @@ Page({
               icon: 'success'
             })
             setTimeout(() => {
-              wx.switchTab({
-                url: '/pages/personal/personal'
-              })
+              if (!this.data.isNavigating) {
+                this.setData({ isNavigating: true })
+                wx.switchTab({
+                  url: '/pages/personal/personal',
+                  fail: () => {
+                    this.setData({ isNavigating: false })
+                  }
+                })
+              }
             }, 1500)
           }
         }

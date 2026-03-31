@@ -1,29 +1,59 @@
 // 登录云函数
-const cloud = require('wx-server-sdk')
+const tcb = require('@cloudbase/node-sdk')
 
-// 使用显式的环境ID初始化
-cloud.init({
-  env: 'tangyuan-3gqjbda947233e77'
-})
-
-const db = cloud.database()
+// 初始化
+const app = tcb.init({ env: 'tangyuan-3gqjbda947233e77' })
+const db = app.database()
 const usersCollection = db.collection('users')
 
 console.log('login云函数初始化完成')
 
+// 从 environment 字符串中解析出 WX_OPENID
+function getOpenIdFromEnv(context) {
+  try {
+    // 方法1: 直接从 context 获取
+    if (context.WX_OPENID) {
+      return context.WX_OPENID
+    }
+    
+    // 方法2: 从 environment 字符串中解析
+    if (typeof context.environment === 'string') {
+      const match = context.environment.match(/WX_OPENID=([^;]+)/)
+      if (match && match[1]) {
+        return match[1]
+      }
+    }
+    
+    // 方法3: 从 environ 字符串中解析
+    if (typeof context.environ === 'string') {
+      const match = context.environ.match(/WX_OPENID=([^;]+)/)
+      if (match && match[1]) {
+        return match[1]
+      }
+    }
+    
+    return null
+  } catch (error) {
+    console.error('解析 openid 失败:', error)
+    return null
+  }
+}
+
 exports.main = async (event, context) => {
+  console.time('login-execution-time')
   try {
     console.log('登录云函数调用, event:', event)
 
     const { code, userInfo } = event
 
-    // 调用微信登录接口获取 openid
-    const wxContext = cloud.getWXContext()
-    const openid = wxContext.OPENID
+    // 从 context 中获取微信登录信息
+    const openid = getOpenIdFromEnv(context)
 
     console.log('获取到 openid:', openid)
+    console.log('WX_OPENID from environment:', getOpenIdFromEnv(context))
 
     if (!openid) {
+      console.error('无法获取用户 openid')
       return {
         success: false,
         error: '无法获取用户 openid'
@@ -53,8 +83,8 @@ exports.main = async (event, context) => {
       }
 
       console.log('创建新用户:', newUser)
-      const addResult = await usersCollection.add({ data: newUser })
-      newUser._id = addResult._id
+      const addResult = await usersCollection.add(newUser)
+      newUser._id = addResult.id
 
       return {
         success: true,

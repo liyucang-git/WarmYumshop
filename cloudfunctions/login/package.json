@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wx-server-sdk": "2.6.3"
+    "@cloudbase/node-sdk": "^3.16.0"
   }
 }

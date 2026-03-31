@@ -18,19 +18,15 @@ App({
 
   checkLoginStatus() {
     try {
-      wx.getStorage({
-        key: 'userInfo',
-        success: (res) => {
-          if (res && res.data) {
-            this.globalData.userInfo = res.data
-            console.log('已登录用户:', res.data)
-          }
-        },
-        fail: () => {
-          // 未登录，后续在个人中心页处理
-          console.log('未找到登录信息')
-        }
-      })
+      // 使用同步方式获取本地存储
+      const userInfo = wx.getStorageSync('userInfo')
+      if (userInfo) {
+        this.globalData.userInfo = userInfo
+        console.log('已登录用户:', userInfo)
+      } else {
+        // 未登录，后续在登录页处理
+        console.log('未找到登录信息')
+      }
     } catch (error) {
       console.error('检查登录状态失败:', error)
     }

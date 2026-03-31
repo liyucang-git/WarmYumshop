@@ -152,6 +152,7 @@ Page({
 
   // 退出登录
   onLogoutTap() {
+    const that = this
     wx.showModal({
       title: '确认退出',
       content: '确定要退出登录吗？',
@@ -177,7 +178,8 @@ Page({
           
           // 退出后跳转到登录页
           setTimeout(() => {
-            wx.redirectTo({
+            // 清空页面栈
+            wx.reLaunch({
               url: '/pages/login/login'
             })
           }, 1500)
