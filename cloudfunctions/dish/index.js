@@ -7,6 +7,7 @@ cloud.init({
 })
 
 const db = cloud.database()
+const storage = cloud.storage()
 const dishesCollection = db.collection('dishes')
 
 console.log('dish云函数初始化完成')
@@ -83,10 +84,23 @@ exports.main = async (event, context) => {
         console.log('开始查询数据库...')
         const result = await query.get()
         console.log('查询结果:', result)
+        
+        // 确保categories字段是数组
+        const processedData = result.data.map(dish => {
+          console.log('dish in cloud function:', dish)
+          console.log('dish.categories:', dish.categories)
+          console.log('dish.categories type:', typeof dish.categories)
+          console.log('dish.categories is array:', Array.isArray(dish.categories))
+          if (!dish.categories || !Array.isArray(dish.categories)) {
+            console.log('dish.categories is not array, setting to empty array')
+            dish.categories = []
+          }
+          return dish
+        })
 
         return {
           success: true,
-          data: result.data
+          data: processedData
         }
       }
       
@@ -101,9 +115,19 @@ exports.main = async (event, context) => {
           }
         }
         
+        const dish = result.data
+        console.log('dish in getDishById:', dish)
+        console.log('dish.categories:', dish.categories)
+        console.log('dish.categories type:', typeof dish.categories)
+        console.log('dish.categories is array:', Array.isArray(dish.categories))
+        if (!dish.categories || !Array.isArray(dish.categories)) {
+          console.log('dish.categories is not array, setting to empty array')
+          dish.categories = []
+        }
+        
         return {
           success: true,
-          data: result.data
+          data: dish
         }
       }
       

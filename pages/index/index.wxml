@@ -123,15 +123,18 @@
           <!-- 分类标签 -->
           <view class="dish-tags">
             <view 
-              wx:for="{{item.categories.slice(0, 2)}}"
+              wx:for="{{item.categories}}"
               wx:key="index"
+              wx:for-item="category"
               class="dish-tag"
             >
-              <text class="tag-text">{{item}}</text>
+              <text class="tag-text">{{category}}</text>
             </view>
-            <text class="more-tag" wx:if="{{item.categories.length > 2}}">
-              +{{item.categories.length - 2}}
-            </text>
+          </view>
+          
+          <!-- 添加时间 -->
+          <view class="dish-time" wx:if="{{item.formattedTime}}">
+            <text class="time-text">{{item.formattedTime}}</text>
           </view>
         </view>
       </view>
@@ -168,21 +171,19 @@
           <!-- 分类标签 -->
           <view class="list-tags">
             <view 
-              wx:for="{{item.categories.slice(0, 3)}}"
+              wx:for="{{item.categories}}"
               wx:key="index"
+              wx:for-item="category"
               class="list-tag"
             >
-              <text class="list-tag-text">{{item}}</text>
+              <text class="list-tag-text">{{category}}</text>
             </view>
-            <text class="more-tag" wx:if="{{item.categories.length > 3}}">
-              +{{item.categories.length - 3}}
-            </text>
           </view>
           
           <!-- 时间信息 -->
-          <view class="list-time" wx:if="{{item.createTime}}">
+          <view class="list-time" wx:if="{{item.formattedTime}}">
             <text class="time-icon">🕐</text>
-            <text class="time-text">{{formatTime(item.createTime)}}</text>
+            <text class="time-text">{{item.formattedTime}}</text>
           </view>
         </view>
       </view>

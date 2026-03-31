@@ -40,9 +40,9 @@
     </view>
     
     <!-- 时间信息 -->
-    <view class="time-info" wx:if="{{dish.createTime}}">
+    <view class="time-info" wx:if="{{dish.formattedTime}}">
       <text class="time-icon">🕐</text>
-      <text class="time-text">添加时间：{{formatTime(dish.createTime)}}</text>
+      <text class="time-text">添加时间：{{dish.formattedTime}}</text>
     </view>
     
     <!-- 描述 -->

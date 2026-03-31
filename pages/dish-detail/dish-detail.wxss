@@ -173,7 +173,7 @@
   gap: 24rpx;
   padding: 24rpx;
   background-color: white;
-  margin-top: 24rpx;
+  margin: 24rpx;
   box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.08);
   position: sticky;
   bottom: 0;

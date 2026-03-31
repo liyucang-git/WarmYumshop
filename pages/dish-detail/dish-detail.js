@@ -26,8 +26,21 @@ Page({
       }
     })
     .then(res => {
+      console.log('getDishById result:', res)
       if (res.result.success) {
-        this.setData({ dish: res.result.data })
+        console.log('dish data:', res.result.data)
+        console.log('dish.createTime:', res.result.data.createTime)
+        console.log('dish.categories:', res.result.data.categories)
+        const dish = res.result.data
+        // 处理时间格式
+        if (dish.createTime) {
+          dish.formattedTime = this.formatTime(dish.createTime)
+        }
+        // 确保categories是数组
+        if (!dish.categories || !Array.isArray(dish.categories)) {
+          dish.categories = []
+        }
+        this.setData({ dish })
       } else {
         wx.showToast({
           title: '获取菜品详情失败',
@@ -130,9 +143,30 @@ Page({
 
   // 格式化时间
   formatTime(time) {
-    if (!time) return ''
-    const date = new Date(time)
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    console.log('formatTime called with:', time)
+    if (!time) {
+      console.log('time is falsy')
+      return ''
+    }
+    
+    let date
+    
+    // 处理数据库返回的时间对象格式 { "$date": 时间戳 }
+    if (typeof time === 'object' && time.$date) {
+      console.log('time is object with $date:', time.$date)
+      date = new Date(time.$date)
+    } else {
+      // 处理ISO 8601格式时间字符串和其他格式
+      console.log('time is:', time, 'type:', typeof time)
+      date = new Date(time)
+    }
+    
+    console.log('date:', date)
+    console.log('date.isValid:', !isNaN(date.getTime()))
+    
+    const result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    console.log('result:', result)
+    return result
   },
 
   // 分类点击
