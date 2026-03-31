@@ -1,0 +1,52 @@
+<!-- 暖圆小铺 - 登录页 -->
+<view class="page-container">
+  <!-- 背景装饰 -->
+  <view class="bg-decoration">
+    <view class="circle circle-1"></view>
+    <view class="circle circle-2"></view>
+    <view class="circle circle-3"></view>
+  </view>
+
+  <!-- 主要内容区 -->
+  <view class="content">
+    <!-- Logo和标题 -->
+    <view class="logo-section">
+      <view class="logo">🍳</view>
+      <view class="app-name">暖圆小铺</view>
+      <view class="app-slogan">记录家庭美味，留住幸福时光</view>
+    </view>
+
+    <!-- 登录说明 -->
+    <view class="login-info">
+      <view class="info-text">
+        通过微信登录，开始使用暖圆小铺
+      </view>
+      <view class="info-desc">
+        创建属于您的家庭菜谱，与家人分享美味
+      </view>
+    </view>
+
+    <!-- 登录按钮 -->
+    <view class="login-btn-wrapper">
+      <button 
+        class="login-btn" 
+        open-type="getUserInfo"
+        bindgetuserinfo="onGetUserInfo"
+        loading="{{loading}}"
+      >
+        <image class="wechat-icon" src="/images/icons/wechat.svg" mode="aspectFit" />
+        <text>微信一键登录</text>
+      </button>
+    </view>
+
+    <!-- 用户协议 -->
+    <view class="agreement">
+      <text class="agreement-text">
+        登录即表示同意
+        <text class="link">《用户协议》</text>
+        和
+        <text class="link">《隐私政策》</text>
+      </text>
+    </view>
+  </view>
+</view>

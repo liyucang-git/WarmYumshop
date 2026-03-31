@@ -7,33 +7,30 @@ Page({
   },
 
   onLoad() {
-    this.getUserInfo()
+    this.checkLoginAndLoad()
   },
 
   onShow() {
-    this.getUserInfo()
+    this.checkLoginAndLoad()
   },
 
-  // 获取用户信息
-  getUserInfo() {
+  // 检查登录状态并加载用户信息
+  checkLoginAndLoad() {
     const app = getApp()
     
     // 安全检查: 确保 app 和 globalData 存在
     if (!app || !app.globalData) {
       console.error('app 或 app.globalData 未初始化')
-      this.setData({ userInfo: {} })
       return
     }
     
     const userInfo = app.globalData.userInfo
     
     if (userInfo) {
-      this.setData({ userInfo })
+      this.setData({ userInfo, showLoginModal: false })
       if (userInfo.familyId) {
         this.getFamilyInfo(userInfo.familyId)
       }
-    } else {
-      this.setData({ userInfo: {} })
     }
   },
 
@@ -177,6 +174,13 @@ Page({
             title: '已退出登录',
             icon: 'success'
           })
+          
+          // 退出后跳转到登录页
+          setTimeout(() => {
+            wx.redirectTo({
+              url: '/pages/login/login'
+            })
+          }, 1500)
         }
       }
     })

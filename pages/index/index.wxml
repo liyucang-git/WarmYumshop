@@ -56,9 +56,9 @@
   </view>
 
   <!-- 菜品列表区 -->
-  <scroll-view 
-    class="dish-scroll" 
-    scroll-y 
+  <scroll-view
+    class="dish-scroll"
+    scroll-y
     enable-back-to-top
     refresher-enabled="{{true}}"
     refresher-triggered="{{refreshing}}"
@@ -70,7 +70,7 @@
       <view class="empty-icon">🍳</view>
       <view class="empty-text">{{searchQuery ? '没有找到相关菜品' : '快来添加第一道拿手好菜吧'}}</view>
       <view class="empty-action" wx:if="{{!searchQuery}}">
-        <button 
+        <button
           class="btn btn-primary empty-btn"
           bindtap="onAddDishTap"
         >

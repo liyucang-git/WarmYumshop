@@ -69,5 +69,7 @@ exports.main = async (event, context) => {
       success: false,
       error: error.message
     }
+  } finally {
+    console.timeEnd('login-execution-time')
   }
 }

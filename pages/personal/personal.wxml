@@ -18,7 +18,7 @@
       <view class="user-nickname">{{userInfo.nickname || '点击登录'}}</view>
       <view class="user-status">{{userInfo.nickname ? '已登录' : '未登录'}}</view>
     </view>
-    <view class="arrow-icon">></view>
+    <view class="arrow-icon" wx:if="{{!userInfo}}">></view>
   </view>
 
   <!-- 家庭信息区 -->
