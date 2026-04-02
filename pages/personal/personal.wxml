@@ -40,7 +40,6 @@
       <view class="section-title">我的家庭</view>
     </view>
     <view class="no-family-content">
-      <view class="no-family-icon">👨‍👩‍👧‍👦</view>
       <view class="no-family-text">还没有加入家庭</view>
       <view class="no-family-buttons">
         <button class="btn btn-primary" bindtap="goToCreateFamily">创建家庭</button>
@@ -55,12 +54,10 @@
       <view class="section-title">其他</view>
     </view>
     <view class="action-item" bindtap="onLogoutTap">
-      <view class="action-icon">🚪</view>
       <view class="action-text">退出登录</view>
       <view class="arrow-icon">></view>
     </view>
     <view class="action-item" bindtap="onAboutTap">
-      <view class="action-icon">ℹ️</view>
       <view class="action-text">关于</view>
       <view class="arrow-icon">></view>
     </view>

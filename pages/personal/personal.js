@@ -12,6 +12,36 @@ Page({
 
   onShow() {
     this.checkLoginAndLoad()
+    
+    // 检查是否有邀请码
+    const app = getApp()
+    if (app && app.globalData && app.globalData.inviteCode) {
+      const inviteCode = app.globalData.inviteCode
+      
+      // 获取当前用户信息
+      const userInfo = this.data.userInfo
+      
+      if (!userInfo || !userInfo._id) {
+        // 未登录，跳转到登录页
+        app.globalData.inviteCode = null
+        wx.navigateTo({
+          url: `/pages/login/login?inviteCode=${inviteCode}`
+        })
+      } else if (userInfo.familyId) {
+        // 已加入家庭，清除邀请码并提示
+        app.globalData.inviteCode = null
+        wx.showToast({
+          title: '您已加入家庭',
+          icon: 'none'
+        })
+      } else {
+        // 未加入家庭，跳转到加入家庭页面
+        app.globalData.inviteCode = null
+        wx.navigateTo({
+          url: `/pages/join-family/join-family?inviteCode=${inviteCode}`
+        })
+      }
+    }
   },
 
   // 检查登录状态并加载用户信息

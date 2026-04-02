@@ -9,7 +9,6 @@ const usersCollection = db.collection('users')
 exports.main = async (event, context) => {
   console.time('user-execution-time')
   try {
-    console.log('用户管理云函数调用, event:', event)
 
     const { action, data } = event
 
@@ -17,7 +16,6 @@ exports.main = async (event, context) => {
       // 更新用户信息
       const { userId, nickname, avatarUrl } = data
       
-      console.log('更新用户信息:', { userId, nickname, avatarUrl })
       
       // 确保userId是字符串类型
       if (!userId || (typeof userId !== 'string' && typeof userId !== 'number')) {
@@ -35,7 +33,6 @@ exports.main = async (event, context) => {
         data: updateData
       })
       
-      console.log('更新用户信息结果:', result)
       
       return {
         success: true,

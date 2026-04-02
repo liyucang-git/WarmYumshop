@@ -9,8 +9,14 @@ Page({
   },
 
   // 页面加载
-  onLoad() {
+  onLoad(options) {
     const app = getApp()
+    
+    // 保存邀请码（如果有）
+    if (options && options.inviteCode) {
+      this.setData({ inviteCode: options.inviteCode })
+    }
+    
     // 检查是否已登录
     if (app.globalData && app.globalData.userInfo) {
       // 已登录且已加入家庭，跳转到首页
@@ -42,7 +48,6 @@ Page({
   // 获取用户信息
   onGetUserInfo(e) {
     const userInfo = e.detail.userInfo
-    console.log('userInfo', userInfo)
     if (!userInfo) {
       wx.showToast({
         title: '需要授权才能继续使用',
@@ -94,12 +99,22 @@ Page({
           setTimeout(() => {
             if (!this.data.isNavigating) {
               this.setData({ isNavigating: true })
-              wx.switchTab({
-                url: '/pages/personal/personal',
-                fail: () => {
-                  this.setData({ isNavigating: false })
-                }
-              })
+              // 如果有邀请码，跳转到加入家庭页面
+              if (this.data.inviteCode) {
+                wx.navigateTo({
+                  url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
+                  fail: () => {
+                    this.setData({ isNavigating: false })
+                  }
+                })
+              } else {
+                wx.switchTab({
+                  url: '/pages/personal/personal',
+                  fail: () => {
+                    this.setData({ isNavigating: false })
+                  }
+                })
+              }
             }
           }, 1500)
         } else {
@@ -130,12 +145,22 @@ Page({
             setTimeout(() => {
               if (!this.data.isNavigating) {
                 this.setData({ isNavigating: true })
-                wx.switchTab({
-                  url: '/pages/personal/personal',
-                  fail: () => {
-                    this.setData({ isNavigating: false })
-                  }
-                })
+                // 如果有邀请码，跳转到加入家庭页面
+                if (this.data.inviteCode) {
+                  wx.navigateTo({
+                    url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
+                    fail: () => {
+                      this.setData({ isNavigating: false })
+                    }
+                  })
+                } else {
+                  wx.switchTab({
+                    url: '/pages/personal/personal',
+                    fail: () => {
+                      this.setData({ isNavigating: false })
+                    }
+                  })
+                }
               }
             }, 1500)
           }

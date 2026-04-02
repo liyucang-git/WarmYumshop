@@ -45,20 +45,14 @@ Page({
       }
     })
     .then(res => {
-      console.log('获取菜品详情结果:', res)
       if (res.result.success) {
         const dish = res.result.data
-        console.log('菜品详情数据:', dish)
-        console.log('菜品分类:', dish.categories)
-        console.log('分类类型:', typeof dish.categories)
-        console.log('是否为数组:', Array.isArray(dish.categories))
         this.setData({
           dishName: dish.name,
           selectedCategories: dish.categories,
           dishDescription: dish.description,
           imageUrl: dish.imageUrl
         }, () => {
-          console.log('设置后的 selectedCategories:', this.data.selectedCategories)
           this.updateCategorySelection()
         })
       } else {
@@ -138,23 +132,17 @@ Page({
   // 切换分类
   toggleCategory(e) {
     const category = e.currentTarget.dataset.category
-    console.log('点击分类:', category)
-    console.log('当前 selectedCategories:', this.data.selectedCategories)
 
     let selectedCategories = [...this.data.selectedCategories]
     const index = selectedCategories.indexOf(category)
-    console.log('分类在数组中的索引:', index)
 
     if (index > -1) {
       selectedCategories = selectedCategories.filter(item => item !== category)
-      console.log('移除分类，新的 selectedCategories:', selectedCategories)
     } else {
       selectedCategories.push(category)
-      console.log('添加分类，新的 selectedCategories:', selectedCategories)
     }
 
     this.setData({ selectedCategories }, () => {
-      console.log('setData 完成，当前 selectedCategories:', this.data.selectedCategories)
       this.updateCategorySelection()
     })
   },

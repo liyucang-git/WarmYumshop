@@ -1,4 +1,10 @@
 /* 登录页样式 */
+
+/* 页面根元素背景色 */
+page {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+}
+
 .page-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);

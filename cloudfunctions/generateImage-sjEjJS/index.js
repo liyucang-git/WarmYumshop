@@ -26,7 +26,6 @@ exports.main = async (event, context) => {
 
         const { style, model = 'hunyuan-image', ...restEvent } = event
 
-        console.log('开始生成图片，参数:', { prompt: event.prompt, model, style })
 
         const res = await imageModel.generateImage({
             model,
@@ -37,7 +36,6 @@ exports.main = async (event, context) => {
             ...restEvent,
         })
 
-        console.log('图片生成结果:', res)
 
         const { data, error } = res
 

@@ -5,6 +5,13 @@ Page({
     loading: false
   },
 
+  onLoad(options) {
+    // 检查是否有邀请码参数
+    if (options && options.inviteCode) {
+      this.setData({ inviteCode: options.inviteCode })
+    }
+  },
+
   // 邀请码输入
   onInviteCodeInput(e) {
     this.setData({ inviteCode: e.detail.value.toUpperCase() })

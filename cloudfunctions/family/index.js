@@ -8,7 +8,6 @@ const _ = db.command
 const familiesCollection = db.collection('families')
 const usersCollection = db.collection('users')
 
-console.log('family云函数初始化完成')
 
 // 生成随机邀请码
 function generateInviteCode() {
@@ -22,7 +21,6 @@ function generateInviteCode() {
 
 exports.main = async (event, context) => {
   try {
-    console.log('家庭管理云函数调用, event:', event)
 
     const { action, data } = event
 
@@ -30,7 +28,6 @@ exports.main = async (event, context) => {
       case 'createFamily': {
         const { name, creatorId } = data
 
-        console.log('创建家庭:', { name, creatorId })
 
         // 生成邀请码
         const inviteCode = generateInviteCode()
@@ -47,10 +44,8 @@ exports.main = async (event, context) => {
           createTime: new Date()
         }
 
-        console.log('插入家庭数据:', newFamily)
         const addResult = await familiesCollection.add(newFamily)
         newFamily._id = addResult.id
-        console.log('家庭创建成功, ID:', newFamily._id)
 
         // 更新用户信息
         await usersCollection.doc(creatorId).update({
@@ -68,7 +63,6 @@ exports.main = async (event, context) => {
       case 'joinFamily': {
         const { inviteCode, userId } = data
 
-        console.log('加入家庭:', { inviteCode, userId })
 
         // 查找家庭
         const familyResult = await familiesCollection.where({ inviteCode }).get()
@@ -118,7 +112,6 @@ exports.main = async (event, context) => {
       case 'getFamilyInfo': {
         const { familyId } = data
 
-        console.log('获取家庭信息:', familyId)
 
         const familyResult = await familiesCollection.doc(familyId).get()
         if (!familyResult.data || familyResult.data.length === 0) {

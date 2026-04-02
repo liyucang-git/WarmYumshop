@@ -1,5 +1,10 @@
 /* 暖圆小铺 - 加入家庭样式 */
 
+/* 页面根元素背景色 */
+page {
+  background-color: #F5F5F5;
+}
+
 /* 页面容器 */
 .page-container {
   min-height: 100vh;
@@ -22,7 +27,7 @@
 
 .btn {
   flex: 1;
-  padding: 20rpx;
+  padding: 12rpx 20rpx;
   border-radius: 12rpx;
   font-size: 28rpx;
   font-weight: 500;

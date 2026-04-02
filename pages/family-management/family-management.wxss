@@ -1,5 +1,10 @@
 /* 暖圆小铺 - 家庭管理样式 */
 
+/* 页面根元素背景色 */
+page {
+  background-color: #F5F5F5;
+}
+
 /* 页面容器 */
 .page-container {
   min-height: 100vh;
@@ -103,6 +108,37 @@
 .invite-hint {
   font-size: 20rpx;
   color: #999999;
+  line-height: 1.2;
+}
+
+.invite-friend-btn {
+  margin-top: 24rpx;
+  padding: 20rpx 32rpx;
+  background: linear-gradient(to right, #FF6B35, #FF8E62);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 53, 0.2);
+}
+
+.invite-friend-btn:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(255, 107, 53, 0.15);
+}
+
+.invite-friend-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.invite-friend-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: white;
   line-height: 1.2;
 }
 
@@ -216,7 +252,7 @@
 .btn {
   box-sizing: border-box;
   width: 100%;
-  padding: 20rpx;
+  padding: 12rpx 20rpx;
   border-radius: 32rpx;
   font-size: 28rpx;
   font-weight: 500;

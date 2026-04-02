@@ -6,7 +6,6 @@ const app = tcb.init({ env: 'tangyuan-3gqjbda947233e77' })
 const db = app.database()
 const usersCollection = db.collection('users')
 
-console.log('login云函数初始化完成')
 
 // 从 environment 字符串中解析出 WX_OPENID
 function getOpenIdFromEnv(context) {
@@ -42,7 +41,6 @@ function getOpenIdFromEnv(context) {
 exports.main = async (event, context) => {
   console.time('login-execution-time')
   try {
-    console.log('登录云函数调用, event:', event)
 
     const { action, data, code, userInfo } = event
 
@@ -50,7 +48,6 @@ exports.main = async (event, context) => {
       // 获取用户信息
       const { userId } = data
       
-      console.log('获取用户信息:', { userId })
       
       // 检查userId是否存在
       if (!userId) {
@@ -69,7 +66,6 @@ exports.main = async (event, context) => {
       }
       
       const userResult = await usersCollection.doc(String(userId)).get()
-      console.log('查询用户结果:', userResult.data)
       
       if (userResult.data) {
         return {
@@ -87,8 +83,6 @@ exports.main = async (event, context) => {
     // 从 context 中获取微信登录信息
     const openid = getOpenIdFromEnv(context)
 
-    console.log('获取到 openid:', openid)
-    console.log('WX_OPENID from environment:', getOpenIdFromEnv(context))
 
     if (!openid) {
       console.error('无法获取用户 openid')
@@ -100,7 +94,6 @@ exports.main = async (event, context) => {
 
     // 查询用户是否已存在
     const userResult = await usersCollection.where({ openid }).get()
-    console.log('查询用户结果:', userResult.data)
 
     if (userResult.data.length > 0) {
       // 用户已存在，返回用户信息
@@ -120,7 +113,6 @@ exports.main = async (event, context) => {
         createTime: new Date()
       }
 
-      console.log('创建新用户:', newUser)
       const addResult = await usersCollection.add(newUser)
       newUser._id = addResult.id
 

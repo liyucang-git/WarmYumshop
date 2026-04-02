@@ -1,5 +1,10 @@
 /* 暖圆小铺 - 个人中心样式 */
 
+/* 页面根元素背景色 */
+page {
+  background-color: #F5F5F5;
+}
+
 /* 页面容器 */
 .page-container {
   min-height: 100vh;
@@ -218,7 +223,7 @@
 
 /* 按钮样式 */
 .btn {
-  padding: 16rpx 32rpx;
+  padding: 12rpx 32rpx;
   border-radius: 32rpx;
   font-size: 24rpx;
   font-weight: 500;

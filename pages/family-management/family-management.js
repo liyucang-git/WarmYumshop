@@ -13,6 +13,24 @@ Page({
 
   onLoad() {
     this.getFamilyInfo()
+    
+    // 显示分享菜单
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+  },
+  
+  // 自定义分享内容
+  onShareAppMessage() {
+    const familyName = this.data.familyInfo.name
+    const inviteCode = this.data.familyInfo.inviteCode
+    
+    return {
+      title: `邀请你加入「${familyName}」`,
+      path: `/pages/join-family/join-family?inviteCode=${inviteCode}`,
+      imageUrl: ''
+    }
   },
 
   // 获取家庭信息
@@ -100,6 +118,39 @@ Page({
         }
       })
     }
+  },
+
+  // 邀请微信好友
+  inviteFriend() {
+    const inviteCode = this.data.familyInfo.inviteCode
+    const familyName = this.data.familyInfo.name
+    
+    // 显示操作菜单
+    wx.showActionSheet({
+      itemList: ['复制邀请码', '转发给好友'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 复制邀请码
+          wx.setClipboardData({
+            data: inviteCode,
+            success: () => {
+              wx.showToast({
+                title: '邀请码已复制',
+                icon: 'success'
+              })
+            }
+          })
+        } else if (res.tapIndex === 1) {
+          // 转发给好友 - 在真机上会触发分享
+          wx.showModal({
+            title: '转发给好友',
+            content: `邀请好友加入「${familyName}」\n\n请按以下步骤操作：\n1. 点击右上角「···」按钮\n2. 选择「转发」\n3. 选择要邀请的好友`,
+            showCancel: false,
+            confirmText: '知道了'
+          })
+        }
+      }
+    })
   },
 
   // 移除成员

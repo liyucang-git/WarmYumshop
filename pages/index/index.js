@@ -60,28 +60,18 @@ Page({
       }
     })
     .then(res => {
-      console.log('getDishes result:', res)
       if (res.result.success) {
         const dishes = res.result.data
-        console.log('dishes:', dishes)
         if (dishes.length > 0) {
-          console.log('first dish createTime:', dishes[0].createTime)
-          console.log('first dish categories:', dishes[0].categories)
-          console.log('first dish categories type:', typeof dishes[0].categories)
-          console.log('first dish categories is array:', Array.isArray(dishes[0].categories))
           // 处理时间格式和分类
           dishes.forEach((dish, index) => {
-            console.log(`dish ${index} categories:`, dish.categories)
-            console.log(`dish ${index} categories is array:`, Array.isArray(dish.categories))
             if (dish.createTime) {
               dish.formattedTime = this.formatTime(dish.createTime)
             }
             // 确保categories是数组
             if (!dish.categories || !Array.isArray(dish.categories)) {
-              console.log(`dish ${index} categories is not array, setting to empty array`)
               dish.categories = []
             }
-            console.log(`dish ${index} processed categories:`, dish.categories)
           })
         }
         this.setData({
@@ -90,7 +80,6 @@ Page({
           loading: false,
           refreshing: false
         })
-        console.log('setData dishList:', this.data.dishList)
       } else {
         wx.showToast({
           title: '获取菜品失败',
@@ -251,9 +240,7 @@ Page({
 
   // 格式化时间
   formatTime(time) {
-    console.log('formatTime called with:', time)
     if (!time) {
-      console.log('time is falsy')
       return ''
     }
     
@@ -261,19 +248,14 @@ Page({
     
     // 处理数据库返回的时间对象格式 { "$date": 时间戳 }
     if (typeof time === 'object' && time.$date) {
-      console.log('time is object with $date:', time.$date)
       date = new Date(time.$date)
     } else {
       // 处理ISO 8601格式时间字符串和其他格式
-      console.log('time is:', time, 'type:', typeof time)
       date = new Date(time)
     }
     
-    console.log('date:', date)
-    console.log('date.isValid:', !isNaN(date.getTime()))
     
     const result = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-    console.log('result:', result)
     return result
   }
 })

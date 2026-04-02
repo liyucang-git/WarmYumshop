@@ -6,11 +6,9 @@ const app = tcb.init({ env: 'tangyuan-3gqjbda947233e77' })
 const db = app.database()
 const dishesCollection = db.collection('dishes')
 
-console.log('dish云函数初始化完成')
 
 exports.main = async (event, context) => {
   console.time('dish-execution-time')
-  console.log('dish云函数被调用:', JSON.stringify(event))
   
   try {
     const { action, data } = event
@@ -31,13 +29,11 @@ exports.main = async (event, context) => {
       }
     }
     
-    console.log('执行操作:', action)
     
     switch (action) {
       case 'addDish': {
         const { name, categories, description, imageUrl, familyId } = data
         
-        console.log('添加菜品参数:', { name, categories, description, imageUrl, familyId })
         
         if (!name || !familyId) {
           return {
@@ -59,7 +55,6 @@ exports.main = async (event, context) => {
         const addResult = await dishesCollection.add(newDish)
         newDish._id = addResult.id
         
-        console.log('添加菜品成功:', newDish._id)
         
         return {
           success: true,
@@ -70,7 +65,6 @@ exports.main = async (event, context) => {
       case 'getDishes': {
         const { familyId, category, searchQuery, sortBy } = data
 
-        console.log('getDishes 参数:', { familyId, category, searchQuery, sortBy })
 
         if (!familyId) {
           console.error('familyId 不能为空')
@@ -110,9 +104,7 @@ exports.main = async (event, context) => {
             query = query.orderBy('createTime', 'asc')
           }
 
-          console.log('开始查询数据库...')
           const result = await query.get()
-          console.log('查询结果数量:', result.data.length)
           
           // 确保categories字段是数组
           const processedData = result.data.map(dish => {
@@ -122,7 +114,6 @@ exports.main = async (event, context) => {
             return dish
           })
 
-          console.log('返回菜品列表，数量:', processedData.length)
 
           return {
             success: true,
@@ -140,7 +131,6 @@ exports.main = async (event, context) => {
       case 'getDishById': {
         const { dishId } = data
         
-        console.log('获取菜品详情, dishId:', dishId)
         
         if (!dishId) {
           return {
@@ -163,7 +153,6 @@ exports.main = async (event, context) => {
             dish.categories = []
           }
           
-          console.log('获取菜品详情成功:', dish._id)
           
           return {
             success: true,
@@ -181,7 +170,6 @@ exports.main = async (event, context) => {
       case 'updateDish': {
         const { dishId, name, categories, description, imageUrl } = data
         
-        console.log('更新菜品参数:', { dishId, name, categories, imageUrl })
         
         if (!dishId || !name) {
           return {
@@ -206,7 +194,6 @@ exports.main = async (event, context) => {
           
           const updatedDish = await dishesCollection.doc(dishId).get()
           
-          console.log('更新菜品成功:', dishId)
           
           return {
             success: true,
@@ -224,7 +211,6 @@ exports.main = async (event, context) => {
       case 'deleteDish': {
         const { dishId, imageUrl } = data
         
-        console.log('删除菜品参数:', { dishId, imageUrl })
         
         if (!dishId) {
           return {
@@ -237,7 +223,6 @@ exports.main = async (event, context) => {
           // 删除菜品
           await dishesCollection.doc(dishId).remove()
           
-          console.log('删除菜品成功:', dishId)
           
           // 注意：CloudBase Node SDK 不支持直接删除文件，需要在控制台删除
           // 或者使用腾讯云 COS API 删除文件
