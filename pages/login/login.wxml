@@ -34,7 +34,6 @@
         bindgetuserinfo="onGetUserInfo"
         loading="{{loading}}"
       >
-        <image class="wechat-icon" src="/images/icons/wechat.svg" mode="aspectFit" />
         <text>微信一键登录</text>
       </button>
     </view>

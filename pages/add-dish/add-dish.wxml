@@ -20,6 +20,19 @@
           <view class="upload-text">点击上传</view>
         </view>
       </view>
+      <!-- AI生成图片按钮 -->
+      <view class="ai-generate-section">
+        <button 
+          class="ai-generate-btn" 
+          bindtap="generateAIImage"
+          disabled="{{generatingImage || !dishName}}"
+          loading="{{generatingImage}}"
+        >
+          {{generatingImage ? 'AI生成中...' : '根据菜品名称生成AI图片'}}
+        </button>
+        <text class="ai-tip" wx:if="{{!dishName}}">请先输入菜品名称</text>
+        <text class="ai-tip" wx:else>根据"{{dishName}}"生成AI图片</text>
+      </view>
     </view>
 
     <!-- 菜品名称 -->

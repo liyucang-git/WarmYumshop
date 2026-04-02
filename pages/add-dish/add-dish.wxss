@@ -153,6 +153,45 @@ page {
   line-height: 1.2;
 }
 
+/* AI生成图片 */
+.ai-generate-section {
+  margin-top: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.ai-generate-btn {
+  width: 100%;
+  padding: 16rpx 24rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 26rpx;
+  font-weight: 500;
+  border-radius: 12rpx;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ai-generate-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.ai-generate-btn[disabled] {
+  background: #E5E5E5;
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.ai-tip {
+  font-size: 22rpx;
+  color: #999999;
+  line-height: 1.2;
+}
+
 /* 输入框 */
 .form-input {
   width: 100%;

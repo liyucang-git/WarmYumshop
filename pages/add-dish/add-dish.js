@@ -7,6 +7,7 @@ Page({
     imageUrl: '',
     categories: ['家常菜', '汤羹', '主食', '甜品', '凉菜', '热菜', '面食', '其他'],
     loading: false,
+    generatingImage: false,
     isEdit: false,
     dishId: '',
     categoryWithSelection: []
@@ -117,6 +118,51 @@ Page({
   // 删除图片
   removeImage() {
     this.setData({ imageUrl: '' })
+  },
+
+  // AI生成图片
+  generateAIImage() {
+    const { dishName } = this.data
+    
+    if (!dishName || !dishName.trim()) {
+      wx.showToast({
+        title: '请先输入菜品名称',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({ generatingImage: true })
+
+    wx.cloud.callFunction({
+      name: 'generateImage-sjEjJS',
+      data: {
+        prompt: `一道美味的${dishName}，精致的美食摄影，高清，专业灯光，诱人的色泽`
+      }
+    })
+    .then(res => {
+      if (res.result && res.result.success && res.result.imageUrl) {
+        this.setData({ 
+          imageUrl: res.result.imageUrl,
+          generatingImage: false 
+        })
+        wx.showToast({
+          title: '生成成功',
+          icon: 'success'
+        })
+      } else {
+        throw new Error(res.result?.message || '生成失败')
+      }
+    })
+    .catch(err => {
+      console.error('AI生成图片失败:', err)
+      wx.showToast({
+        title: err.message || '生成失败，请重试',
+        icon: 'none',
+        duration: 2000
+      })
+      this.setData({ generatingImage: false })
+    })
   },
 
   // 菜品名称输入
