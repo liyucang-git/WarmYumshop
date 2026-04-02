@@ -178,4 +178,84 @@
 .agreement .link {
   color: #ffffff;
   text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 协议弹窗 */
+.agreement-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 16rpx;
+  width: 85%;
+  max-width: 600rpx;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #E5E5E5;
+}
+
+.modal-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.modal-close {
+  font-size: 36rpx;
+  color: #999999;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 32rpx;
+  max-height: 50vh;
+  box-sizing: border-box;
+}
+
+.agreement-content {
+  font-size: 24rpx;
+  color: #333333;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: 24rpx 32rpx;
+  border-top: 1rpx solid #E5E5E5;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 16rpx 64rpx;
+  background-color: #FF6B35;
+  color: white;
+  font-size: 24rpx;
+  font-weight: 500;
+  border-radius: 32rpx;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-btn:active {
+  opacity: 0.8;
+  transform: scale(0.95);
 }

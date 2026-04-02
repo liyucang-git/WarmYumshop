@@ -2,7 +2,10 @@
 Page({
   data: {
     loading: false,
-    isNavigating: false
+    isNavigating: false,
+    showAgreementModal: false,
+    agreementTitle: '',
+    agreementContent: ''
   },
 
   // 页面加载
@@ -150,6 +153,34 @@ Page({
     })
     .finally(() => {
       this.setData({ loading: false })
+    })
+  },
+
+  // 打开协议弹窗
+  onAgreementTap(e) {
+    const type = e.currentTarget.dataset.type
+    let title = ''
+    let content = ''
+
+    if (type === 'user') {
+      title = '用户协议'
+      content = `用户协议\n\n1. 欢迎使用暖圆小铺！本协议是您与暖圆小铺之间的法律协议。\n\n2. 您在使用暖圆小铺服务前，应当仔细阅读并理解本协议的全部内容。\n\n3. 您通过登录、使用暖圆小铺服务，即表示您同意受本协议的约束。\n\n4. 暖圆小铺保留随时修改本协议的权利，修改后的协议将在应用内公布。\n\n5. 您应当妥善保管您的账号和密码，对您的账号下的所有行为负责。\n\n6. 您在使用暖圆小铺服务时，应当遵守法律法规，不得利用服务从事违法活动。\n\n7. 暖圆小铺有权在必要时终止向您提供服务，如您违反本协议的规定。\n\n8. 本协议的最终解释权归暖圆小铺所有。`
+    } else if (type === 'privacy') {
+      title = '隐私政策'
+      content = `隐私政策\n\n1. 暖圆小铺重视您的隐私保护，我们将按照本政策处理您的个人信息。\n\n2. 我们收集的信息包括：您的微信昵称、头像、openid等。\n\n3. 我们收集信息的目的是为了提供更好的服务，如识别用户身份、个性化推荐等。\n\n4. 我们不会向第三方分享您的个人信息，除非得到您的明确授权或法律法规要求。\n\n5. 我们会采取合理的安全措施保护您的个人信息，防止信息泄露。\n\n6. 您有权访问、修改或删除您的个人信息，如您需要，请联系我们。\n\n7. 本隐私政策可能会不时更新，更新后的政策将在应用内公布。\n\n8. 如您对本隐私政策有任何疑问，请联系我们。`
+    }
+
+    this.setData({
+      showAgreementModal: true,
+      agreementTitle: title,
+      agreementContent: content
+    })
+  },
+
+  // 关闭协议弹窗
+  onCloseModal() {
+    this.setData({
+      showAgreementModal: false
     })
   }
 })
