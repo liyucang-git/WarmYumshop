@@ -5,7 +5,11 @@ Page({
     loading: false
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/edit-profile/edit-profile', options)) {
+      return
+    }
     this.loadUserInfo()
   },
 

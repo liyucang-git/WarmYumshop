@@ -7,6 +7,7 @@ const db = app.database()
 const _ = db.command
 const familiesCollection = db.collection('families')
 const usersCollection = db.collection('users')
+const dishesCollection = db.collection('dishes')
 
 
 // 生成随机邀请码
@@ -174,6 +175,14 @@ exports.main = async (event, context) => {
 
         const family = familyResult.data[0]
 
+        // 删除家庭的所有菜品
+        const dishesResult = await dishesCollection.where({ familyId }).get()
+        if (dishesResult.data && dishesResult.data.length > 0) {
+          for (const dish of dishesResult.data) {
+            await dishesCollection.doc(dish._id).remove()
+          }
+        }
+
         // 清除所有成员的家庭信息
         for (const member of family.members) {
           await usersCollection.doc(member.userId).update({
@@ -217,6 +226,37 @@ exports.main = async (event, context) => {
           familyId: _.remove(),
           role: _.remove(),
           joinTime: _.remove()
+        })
+
+        return {
+          success: true
+        }
+      }
+
+      case 'updateFamilyName': {
+        const { familyId, newName, userId } = data
+
+        // 检查家庭是否存在
+        const familyResult = await familiesCollection.doc(familyId).get()
+        if (!familyResult.data || familyResult.data.length === 0) {
+          return {
+            success: false,
+            error: '家庭不存在'
+          }
+        }
+
+        // 检查用户是否是创建者
+        const userResult = await usersCollection.doc(userId).get()
+        if (userResult.data.length === 0 || userResult.data[0].role !== 'creator') {
+          return {
+            success: false,
+            error: '只有创建者才能修改家庭名称'
+          }
+        }
+
+        // 更新家庭名称
+        await familiesCollection.doc(familyId).update({
+          name: newName
         })
 
         return {

@@ -89,82 +89,79 @@ Page({
           data: userData
         })
         
-        // 判断是否为新用户
-        if (res.result.isNewUser) {
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success'
-          })
-          // 新用户跳转到个人中心引导创建家庭
-          setTimeout(() => {
-            if (!this.data.isNavigating) {
-              this.setData({ isNavigating: true })
-              // 如果有邀请码，跳转到加入家庭页面
-              if (this.data.inviteCode) {
-                wx.navigateTo({
-                  url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
+        // 判断是否有需要跳转的页面
+        const redirectUrl = app.globalData.redirectUrl
+        
+        // 登录成功后跳转
+        const navigateAfterLogin = () => {
+          if (!this.data.isNavigating) {
+            this.setData({ isNavigating: true })
+            
+            // 如果有重定向URL，优先跳转到重定向页面
+            if (redirectUrl) {
+              app.globalData.redirectUrl = null
+              
+              // 判断是否是 tabBar 页面
+              const tabBarPages = ['pages/index/index', 'pages/personal/personal']
+              const isTabBarPage = tabBarPages.some(page => redirectUrl.includes(page))
+              
+              if (isTabBarPage) {
+                wx.switchTab({
+                  url: redirectUrl,
                   fail: () => {
                     this.setData({ isNavigating: false })
                   }
                 })
               } else {
-                wx.switchTab({
-                  url: '/pages/personal/personal',
+                wx.reLaunch({
+                  url: redirectUrl,
                   fail: () => {
                     this.setData({ isNavigating: false })
                   }
                 })
               }
-            }
-          }, 1500)
-        } else {
-          // 老用户
-          if (userData.familyId) {
-            // 已加入家庭，跳转到首页
-            wx.showToast({
-              title: '登录成功',
-              icon: 'success'
-            })
-            setTimeout(() => {
-              if (!this.data.isNavigating) {
-                this.setData({ isNavigating: true })
-                wx.switchTab({
-                  url: '/pages/index/index',
-                  fail: () => {
-                    this.setData({ isNavigating: false })
-                  }
-                })
-              }
-            }, 1500)
-          } else {
-            // 未加入家庭，跳转到个人中心
-            wx.showToast({
-              title: '登录成功',
-              icon: 'success'
-            })
-            setTimeout(() => {
-              if (!this.data.isNavigating) {
-                this.setData({ isNavigating: true })
-                // 如果有邀请码，跳转到加入家庭页面
-                if (this.data.inviteCode) {
-                  wx.navigateTo({
-                    url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
-                    fail: () => {
-                      this.setData({ isNavigating: false })
-                    }
-                  })
-                } else {
-                  wx.switchTab({
-                    url: '/pages/personal/personal',
-                    fail: () => {
-                      this.setData({ isNavigating: false })
-                    }
-                  })
+            } else if (this.data.inviteCode) {
+              // 如果有邀请码，跳转到加入家庭页面
+              wx.navigateTo({
+                url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
+                fail: () => {
+                  this.setData({ isNavigating: false })
                 }
-              }
-            }, 1500)
+              })
+            } else if (res.result.isNewUser) {
+              // 新用户跳转到个人中心
+              wx.switchTab({
+                url: '/pages/personal/personal',
+                fail: () => {
+                  this.setData({ isNavigating: false })
+                }
+              })
+            } else if (userData.familyId) {
+              // 老用户已加入家庭，跳转到首页
+              wx.switchTab({
+                url: '/pages/index/index',
+                fail: () => {
+                  this.setData({ isNavigating: false })
+                }
+              })
+            } else {
+              // 老用户未加入家庭，跳转到个人中心
+              wx.switchTab({
+                url: '/pages/personal/personal',
+                fail: () => {
+                  this.setData({ isNavigating: false })
+                }
+              })
+            }
           }
         }
+        
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success'
+        })
+        
+        setTimeout(navigateAfterLogin, 1500)
       } else {
         wx.showToast({
           title: '登录失败，请重试',

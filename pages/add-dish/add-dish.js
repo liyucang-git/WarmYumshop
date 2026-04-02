@@ -19,6 +19,10 @@ Page({
   },
 
   onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/add-dish/add-dish', options)) {
+      return
+    }
     this.updateCategorySelection()
     if (options.id) {
       this.setData({ isEdit: true, dishId: options.id })

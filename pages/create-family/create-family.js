@@ -5,6 +5,13 @@ Page({
     loading: false
   },
 
+  onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/create-family/create-family', options)) {
+      return
+    }
+  },
+
   // 家庭名称输入
   onFamilyNameInput(e) {
     this.setData({ familyName: e.detail.value })

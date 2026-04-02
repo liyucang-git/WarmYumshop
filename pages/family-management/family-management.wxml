@@ -2,7 +2,27 @@
 <view class="page-container">
   <!-- 家庭信息 -->
   <view class="family-info-section">
-    <view class="family-name">{{familyInfo.name}}</view>
+    <view class="family-name-section">
+      <view wx:if="{{!editingName}}" class="family-name-display">
+        <text class="family-name">{{familyInfo.name}}</text>
+        <view wx:if="{{userRole === 'creator'}}" class="edit-name-btn" bindtap="startEditName">
+          <text class="edit-icon">✏️</text>
+        </view>
+      </view>
+      <view wx:else class="family-name-edit">
+        <input 
+          class="family-name-input" 
+          value="{{newFamilyName}}" 
+          bindinput="onFamilyNameInput" 
+          placeholder="请输入家庭名称"
+          maxlength="20"
+        />
+        <view class="edit-actions">
+          <view class="cancel-edit-btn" bindtap="cancelEditName">取消</view>
+          <view class="save-name-btn" bindtap="saveFamilyName">保存</view>
+        </view>
+      </view>
+    </view>
     <view class="invite-code-section">
       <view class="invite-code-label">邀请码</view>
       <view class="invite-code-content">

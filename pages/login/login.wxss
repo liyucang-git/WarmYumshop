@@ -13,6 +13,9 @@ page {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  padding-top: calc(env(safe-area-inset-top) + 40rpx);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 40rpx);
+  box-sizing: border-box;
 }
 
 /* 背景装饰 */

@@ -10,6 +10,22 @@ Page({
     if (options && options.inviteCode) {
       this.setData({ inviteCode: options.inviteCode })
     }
+    
+    // 检查用户是否已登录
+    const app = getApp()
+    if (!app || !app.globalData || !app.globalData.userInfo || !app.globalData.userInfo._id) {
+      console.log('用户未登录，跳转到登录页')
+      // 保存邀请码到全局数据
+      if (options && options.inviteCode) {
+        app.globalData.inviteCode = options.inviteCode
+      }
+      // 跳转到登录页
+      wx.reLaunch({
+        url: options && options.inviteCode 
+          ? `/pages/login/login?inviteCode=${options.inviteCode}`
+          : '/pages/login/login'
+      })
+    }
   },
 
   // 邀请码输入

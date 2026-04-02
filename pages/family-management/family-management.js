@@ -7,11 +7,17 @@ Page({
     showConfirmDialog: false,
     confirmDialogTitle: '',
     confirmDialogContent: '',
-    actionType: '',
-    targetUserId: ''
+    confirmActionType: '',
+    editingName: false,
+    newFamilyName: '',
+    savingName: false
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/family-management/family-management', options)) {
+      return
+    }
     this.getFamilyInfo()
     
     // 显示分享菜单
@@ -23,13 +29,28 @@ Page({
   
   // 自定义分享内容
   onShareAppMessage() {
-    const familyName = this.data.familyInfo.name
+    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
     const inviteCode = this.data.familyInfo.inviteCode
     
+    console.log('onShareAppMessage 被调用')
+    console.log('familyName:', familyName)
+    console.log('inviteCode:', inviteCode)
+    
     return {
-      title: `邀请你加入「${familyName}」`,
+      title: `邀请你加入「${familyName}」，一起记录美味时光`,
       path: `/pages/join-family/join-family?inviteCode=${inviteCode}`,
-      imageUrl: ''
+      imageUrl: '/images/暖圆小铺.jpeg'
+    }
+  },
+
+  // 自定义分享到朋友圈
+  onShareTimeline() {
+    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
+    
+    return {
+      title: `欢迎加入「${familyName}」，一起记录美味时光`,
+      query: '',
+      imageUrl: '/images/暖圆小铺.jpeg'
     }
   },
 
@@ -123,11 +144,11 @@ Page({
   // 邀请微信好友
   inviteFriend() {
     const inviteCode = this.data.familyInfo.inviteCode
-    const familyName = this.data.familyInfo.name
+    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
     
     // 显示操作菜单
     wx.showActionSheet({
-      itemList: ['复制邀请码', '转发给好友'],
+      itemList: ['复制邀请码', '点击右上角转发'],
       success: (res) => {
         if (res.tapIndex === 0) {
           // 复制邀请码
@@ -141,12 +162,12 @@ Page({
             }
           })
         } else if (res.tapIndex === 1) {
-          // 转发给好友 - 在真机上会触发分享
+          // 提示用户点击右上角转发
           wx.showModal({
-            title: '转发给好友',
-            content: `邀请好友加入「${familyName}」\n\n请按以下步骤操作：\n1. 点击右上角「···」按钮\n2. 选择「转发」\n3. 选择要邀请的好友`,
+            title: '转发邀请',
+            content: `邀请好友加入「${familyName}」\n\n请点击右上角「···」选择「转发」`,
             showCancel: false,
-            confirmText: '知道了'
+            confirmText: '好的'
           })
         }
       }
@@ -364,6 +385,98 @@ Page({
     })
     .finally(() => {
       this.setData({ showConfirmDialog: false })
+    })
+  },
+
+  // 开始编辑家庭名称
+  startEditName() {
+    this.setData({
+      editingName: true,
+      newFamilyName: this.data.familyInfo.name || ''
+    })
+  },
+
+  // 取消编辑家庭名称
+  cancelEditName() {
+    this.setData({
+      editingName: false,
+      newFamilyName: ''
+    })
+  },
+
+  // 家庭名称输入
+  onFamilyNameInput(e) {
+    this.setData({
+      newFamilyName: e.detail.value
+    })
+  },
+
+  // 保存家庭名称
+  saveFamilyName() {
+    const { newFamilyName, familyInfo } = this.data
+    const app = getApp()
+    
+    if (!newFamilyName || !newFamilyName.trim()) {
+      wx.showToast({
+        title: '请输入家庭名称',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (!app || !app.globalData || !app.globalData.userInfo) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    this.setData({ savingName: true })
+
+    wx.cloud.callFunction({
+      name: 'family',
+      data: {
+        action: 'updateFamilyName',
+        data: {
+          familyId: familyInfo._id,
+          newName: newFamilyName.trim(),
+          userId: app.globalData.userInfo._id
+        }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        wx.showToast({
+          title: '修改成功',
+          icon: 'success'
+        })
+        // 更新本地数据
+        this.setData({
+          'familyInfo.name': newFamilyName.trim(),
+          editingName: false,
+          newFamilyName: ''
+        })
+        // 更新全局数据
+        if (app.globalData.familyInfo) {
+          app.globalData.familyInfo.name = newFamilyName.trim()
+        }
+      } else {
+        wx.showToast({
+          title: res.result.error || '修改失败',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('修改家庭名称失败:', err)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    })
+    .finally(() => {
+      this.setData({ savingName: false })
     })
   }
 

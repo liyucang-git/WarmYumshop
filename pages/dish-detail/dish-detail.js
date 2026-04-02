@@ -11,6 +11,10 @@ Page({
   },
 
   onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/dish-detail/dish-detail', options)) {
+      return
+    }
     if (options.id) {
       this.getDishDetail(options.id)
     }

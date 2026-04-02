@@ -20,7 +20,11 @@ Page({
     ]
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/index/index', options)) {
+      return
+    }
     this.getDishes()
   },
 

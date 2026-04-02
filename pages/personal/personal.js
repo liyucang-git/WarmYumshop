@@ -6,7 +6,11 @@ Page({
     showLoginModal: false
   },
 
-  onLoad() {
+  onLoad(options) {
+    const app = getApp()
+    if (!app.checkLoginAndRedirect('pages/personal/personal', options)) {
+      return
+    }
     this.checkLoginAndLoad()
   },
 
