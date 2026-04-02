@@ -1,10 +1,5 @@
 <!-- 暖圆小铺 - 个人中心 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-title">个人中心</view>
-  </view>
-
   <!-- 用户信息区 -->
   <view class="user-info-section" bindtap="onUserInfoTap">
     <view class="user-avatar">

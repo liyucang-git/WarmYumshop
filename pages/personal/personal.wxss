@@ -6,27 +6,6 @@
   background-color: #F5F5F5;
 }
 
-/* 顶部导航栏 */
-.header {
-  background: linear-gradient(to right, #FF6B35, #FF8E62);
-  padding: 24rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-.header-title {
-  font-size: 36rpx;
-  font-weight: 600;
-  color: white;
-  line-height: 1.2;
-}
-
 /* 用户信息区 */
 .user-info-section {
   background-color: white;
