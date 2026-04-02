@@ -1,16 +1,5 @@
 <!-- 暖圆小铺 - 加入家庭 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-left" bindtap="onCancel">
-      <view class="back-icon">←</view>
-    </view>
-    <view class="header-title">加入家庭</view>
-    <view class="header-right" bindtap="onJoin">
-      <view class="join-btn">加入</view>
-    </view>
-  </view>
-
   <!-- 表单区域 -->
   <view class="form-container">
     <view class="form-item">
@@ -33,6 +22,12 @@
         <view class="tips-item">• 邀请码长期有效</view>
       </view>
     </view>
+  </view>
+
+  <!-- 底部按钮区域 -->
+  <view class="bottom-buttons">
+    <view class="btn cancel-btn" bindtap="onCancel">取消</view>
+    <view class="btn join-btn" bindtap="onJoin">加入</view>
   </view>
 
   <!-- 加载中 -->

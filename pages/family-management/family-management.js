@@ -60,12 +60,25 @@ Page({
     
     Promise.all(memberPromises)
       .then(results => {
-        const membersInfo = results.map((result, index) => ({
-          userId: members[index].userId,
-          nickname: result.data.nickname,
-          avatarUrl: result.data.avatarUrl,
-          role: result.data.role
-        }))
+        const membersInfo = results.map((result, index) => {
+          let userData = result.data
+          
+          // 处理嵌套的data字段（如果存在）
+          if (userData.data && (userData.data.nickname || userData.data.avatarUrl)) {
+            userData = {
+              ...userData,
+              nickname: userData.data.nickname || userData.nickname,
+              avatarUrl: userData.data.avatarUrl || userData.avatarUrl
+            }
+          }
+          
+          return {
+            userId: members[index].userId,
+            nickname: userData.nickname,
+            avatarUrl: userData.avatarUrl,
+            role: userData.role
+          }
+        })
         this.setData({ members: membersInfo })
       })
       .catch(err => {
@@ -301,10 +314,6 @@ Page({
     .finally(() => {
       this.setData({ showConfirmDialog: false })
     })
-  },
-
-  // 返回
-  onBack() {
-    wx.navigateBack()
   }
+
 })

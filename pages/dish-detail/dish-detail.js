@@ -65,11 +65,6 @@ Page({
     })
   },
 
-  // 返回
-  onBack() {
-    wx.navigateBack()
-  },
-
   // 显示操作菜单
   showActionMenu() {
     this.setData({ showActionSheet: true })

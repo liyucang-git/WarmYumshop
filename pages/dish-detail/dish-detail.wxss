@@ -6,52 +6,7 @@
   background-color: #F5F5F5;
 }
 
-/* 顶部导航栏 */
-.header {
-  background: linear-gradient(to right, #FF6B35, #FF8E62);
-  padding: 24rpx;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
 
-.header-left,
-.header-right {
-  width: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-icon {
-  font-size: 32rpx;
-  color: white;
-  font-weight: 600;
-}
-
-.header-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: white;
-  line-height: 1.2;
-  flex: 1;
-  text-align: center;
-  margin: 0 20rpx;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.action-icon {
-  font-size: 32rpx;
-  color: white;
-  font-weight: 600;
-}
 
 /* 菜品图片 */
 .image-container {

@@ -1,14 +1,5 @@
 <!-- 暖圆小铺 - 家庭管理 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-left" bindtap="onBack">
-      <view class="back-icon">←</view>
-    </view>
-    <view class="header-title">家庭管理</view>
-    <view class="header-right"></view>
-  </view>
-
   <!-- 家庭信息 -->
   <view class="family-info-section">
     <view class="family-name">{{familyInfo.name}}</view>

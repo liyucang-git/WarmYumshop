@@ -1,16 +1,5 @@
 <!-- 暖圆小铺 - 创建家庭 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-left" bindtap="onCancel">
-      <view class="back-icon">←</view>
-    </view>
-    <view class="header-title">创建家庭</view>
-    <view class="header-right" bindtap="onCreate">
-      <view class="create-btn">创建</view>
-    </view>
-  </view>
-
   <!-- 表单区域 -->
   <view class="form-container">
     <view class="form-item">
@@ -33,6 +22,12 @@
         <view class="tips-item">• 分享美食瞬间</view>
       </view>
     </view>
+  </view>
+
+  <!-- 底部按钮区域 -->
+  <view class="bottom-buttons">
+    <view class="btn cancel-btn" bindtap="onCancel">取消</view>
+    <view class="btn create-btn" bindtap="onCreate">创建</view>
   </view>
 
   <!-- 加载中 -->

@@ -1,14 +1,5 @@
 <!-- 暖圆小铺 - 修改个人信息 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-left" bindtap="onBack">
-      <view class="back-icon">←</view>
-    </view>
-    <view class="header-title">修改个人信息</view>
-    <view class="header-right"></view>
-  </view>
-
   <!-- 主要内容区 -->
   <view class="content">
     <!-- 头像修改 -->

@@ -1,9 +1,18 @@
 <!-- 暖圆小铺 - 首页 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-content">
-      <view class="header-title">暖圆小铺</view>
+  <!-- 顶部内容区 -->
+  <view class="top-content">
+    <!-- 搜索框和视图切换 -->
+    <view class="search-container">
+      <view class="search-box">
+        <image class="search-icon" src="/images/icons/search.svg" mode="aspectFit" />
+        <input 
+          class="search-input" 
+          placeholder="搜索菜品..." 
+          placeholder-class="search-placeholder"
+          bindinput="onSearchInput"
+        />
+      </view>
       <view class="action-btn" bindtap="toggleViewMode">
         <image 
           class="action-icon" 
@@ -11,17 +20,6 @@
           mode="aspectFit"
         />
       </view>
-    </view>
-
-    <!-- 搜索框 -->
-    <view class="search-box">
-      <image class="search-icon" src="/images/icons/search.svg" mode="aspectFit" />
-      <input 
-        class="search-input" 
-        placeholder="搜索菜品..." 
-        placeholder-class="search-placeholder"
-        bindinput="onSearchInput"
-      />
     </view>
 
     <!-- 分类筛选区 -->

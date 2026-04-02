@@ -21,17 +21,38 @@ App({
       // 使用同步方式获取本地存储
       const userInfo = wx.getStorageSync('userInfo')
       if (userInfo) {
-        this.globalData.userInfo = userInfo
-        console.log('已登录用户:', userInfo)
-        
-        // 从云函数重新获取最新用户信息
-        this.getLatestUserInfo(userInfo._id)
+        // 检查是否有_id字段
+        if (userInfo._id) {
+          this.globalData.userInfo = userInfo
+          console.log('已登录用户:', userInfo)
+          
+          // 从云函数重新获取最新用户信息
+          this.getLatestUserInfo(userInfo._id)
+        } else {
+          // 用户信息缺少_id字段，清除本地存储并跳转到登录页
+          console.error('用户信息缺少_id字段，需要重新登录')
+          wx.removeStorageSync('userInfo')
+          this.globalData.userInfo = null
+          
+          // 跳转到登录页
+          wx.reLaunch({
+            url: '/pages/login/login'
+          })
+        }
       } else {
         // 未登录，后续在登录页处理
         console.log('未找到登录信息')
       }
     } catch (error) {
       console.error('检查登录状态失败:', error)
+      // 清除本地存储并跳转到登录页
+      wx.removeStorageSync('userInfo')
+      this.globalData.userInfo = null
+      
+      // 跳转到登录页
+      wx.reLaunch({
+        url: '/pages/login/login'
+      })
     }
   },
   

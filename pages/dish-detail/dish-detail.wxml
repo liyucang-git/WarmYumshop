@@ -1,14 +1,5 @@
 <!-- 暖圆小铺 - 菜品详情 -->
 <view class="page-container">
-  <!-- 顶部导航栏 -->
-  <view class="header">
-    <view class="header-left" bindtap="onBack">
-      <view class="back-icon">←</view>
-    </view>
-    <view class="header-title">{{dish.name || '菜品详情'}}</view>
-    <view class="header-right"></view>
-  </view>
-
   <!-- 菜品图片 -->
   <view class="image-container" bindtap="previewImage">
     <image 

@@ -29,11 +29,6 @@ Page({
     this.setData({ userInfo: app.globalData.userInfo })
   },
 
-  // 返回
-  onBack() {
-    wx.navigateBack()
-  },
-
   // 选择头像
   onAvatarTap() {
     wx.chooseImage({
