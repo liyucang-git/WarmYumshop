@@ -11,7 +11,7 @@
   <view class="content">
     <!-- Logo和标题 -->
     <view class="logo-section">
-      <view class="logo">🍳</view>
+      <image class="logo-image" src="/images/暖圆小铺.jpeg" mode="aspectFill" />
       <view class="app-name">暖圆小铺</view>
       <view class="app-slogan">记录家庭美味，留住幸福时光</view>
     </view>
