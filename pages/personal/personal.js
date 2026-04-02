@@ -46,6 +46,35 @@ Page({
     .then(res => {
       if (res.result.success) {
         this.setData({ familyInfo: res.result.data })
+      } else {
+        // 家庭不存在，清除用户的 familyId
+        const app = getApp()
+        const updatedUserInfo = { 
+          ...this.data.userInfo, 
+          familyId: '', 
+          role: '' 
+        }
+        
+        if (app && app.globalData) {
+          app.globalData.userInfo = updatedUserInfo
+        }
+        
+        this.setData({ 
+          familyInfo: {},
+          userInfo: updatedUserInfo
+        })
+        
+        // 同步更新本地存储
+        wx.setStorage({
+          key: 'userInfo',
+          data: updatedUserInfo
+        })
+        
+        wx.showToast({
+          title: '家庭不存在或已解散',
+          icon: 'none',
+          duration: 2000
+        })
       }
     })
     .catch(err => {
