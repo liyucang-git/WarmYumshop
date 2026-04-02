@@ -52,7 +52,23 @@ exports.main = async (event, context) => {
       
       console.log('获取用户信息:', { userId })
       
-      const userResult = await usersCollection.doc(userId).get()
+      // 检查userId是否存在
+      if (!userId) {
+        return {
+          success: false,
+          error: '缺少用户ID参数'
+        }
+      }
+      
+      // 确保userId是字符串类型
+      if (typeof userId !== 'string' && typeof userId !== 'number') {
+        return {
+          success: false,
+          error: '无效的用户ID'
+        }
+      }
+      
+      const userResult = await usersCollection.doc(String(userId)).get()
       console.log('查询用户结果:', userResult.data)
       
       if (userResult.data) {

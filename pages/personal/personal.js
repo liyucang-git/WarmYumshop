@@ -95,6 +95,11 @@ Page({
     
     if (!app.globalData.userInfo || !app.globalData.userInfo.nickname) {
       this.setData({ showLoginModal: true })
+    } else {
+      // 已登录，跳转到修改个人信息页面
+      wx.navigateTo({
+        url: '/pages/edit-profile/edit-profile'
+      })
     }
   },
 
@@ -110,12 +115,31 @@ Page({
       })
       .then(res => {
         if (res.result.success) {
+          let userData = res.result.data
+          
+          // 处理嵌套的data字段（如果存在）
+          if (userData.data && (userData.data.nickname || userData.data.avatarUrl)) {
+            userData = {
+              ...userData,
+              nickname: userData.data.nickname || userData.nickname,
+              avatarUrl: userData.data.avatarUrl || userData.avatarUrl
+            }
+            // 删除嵌套的data字段
+            delete userData.data
+          }
+          
           const app = getApp()
-          app.globalData.userInfo = res.result.data
+          app.globalData.userInfo = userData
           this.setData({ 
-            userInfo: res.result.data,
+            userInfo: userData,
             showLoginModal: false 
           })
+          
+          // 检查用户是否有家庭ID，如果有，获取家庭信息
+          if (userData.familyId) {
+            this.getFamilyInfo(userData.familyId)
+          }
+          
           wx.showToast({
             title: '登录成功',
             icon: 'success'
@@ -223,13 +247,6 @@ Page({
       title: '关于暖圆小铺',
       content: '暖圆小铺是一款聚焦家庭场景的轻量工具小程序，帮助家庭记录和分享私房菜谱，留住美食时光。\n\n版本：1.0.0',
       showCancel: false
-    })
-  },
-
-  // 跳转到修改个人信息页面
-  onEditProfileTap() {
-    wx.navigateTo({
-      url: '/pages/edit-profile/edit-profile'
     })
   }
 })

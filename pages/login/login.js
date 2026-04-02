@@ -62,13 +62,26 @@ Page({
     })
     .then(res => {
       if (res.result.success) {
+        let userData = res.result.data
+        
+        // 处理嵌套的data字段（如果存在）
+        if (userData.data && (userData.data.nickname || userData.data.avatarUrl)) {
+          userData = {
+            ...userData,
+            nickname: userData.data.nickname || userData.nickname,
+            avatarUrl: userData.data.avatarUrl || userData.avatarUrl
+          }
+          // 删除嵌套的data字段
+          delete userData.data
+        }
+        
         const app = getApp()
-        app.globalData.userInfo = res.result.data
+        app.globalData.userInfo = userData
         
         // 保存用户信息到本地存储
         wx.setStorage({
           key: 'userInfo',
-          data: res.result.data
+          data: userData
         })
         
         // 判断是否为新用户
@@ -91,7 +104,7 @@ Page({
           }, 1500)
         } else {
           // 老用户
-          if (res.result.data.familyId) {
+          if (userData.familyId) {
             // 已加入家庭，跳转到首页
             wx.showToast({
               title: '登录成功',

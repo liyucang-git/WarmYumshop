@@ -19,11 +19,19 @@ exports.main = async (event, context) => {
       
       console.log('更新用户信息:', { userId, nickname, avatarUrl })
       
+      // 确保userId是字符串类型
+      if (!userId || (typeof userId !== 'string' && typeof userId !== 'number')) {
+        return {
+          success: false,
+          error: '无效的用户ID'
+        }
+      }
+      
       const updateData = {}
       if (nickname) updateData.nickname = nickname
       if (avatarUrl) updateData.avatarUrl = avatarUrl
       
-      const result = await usersCollection.doc(userId).update({
+      const result = await usersCollection.doc(String(userId)).update({
         data: updateData
       })
       

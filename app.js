@@ -48,7 +48,19 @@ App({
     })
     .then(res => {
       if (res.result.success) {
-        const latestUserInfo = res.result.data
+        let latestUserInfo = res.result.data
+        
+        // 处理嵌套的data字段（如果存在）
+        if (latestUserInfo.data && (latestUserInfo.data.nickname || latestUserInfo.data.avatarUrl)) {
+          latestUserInfo = {
+            ...latestUserInfo,
+            nickname: latestUserInfo.data.nickname || latestUserInfo.nickname,
+            avatarUrl: latestUserInfo.data.avatarUrl || latestUserInfo.avatarUrl
+          }
+          // 删除嵌套的data字段
+          delete latestUserInfo.data
+        }
+        
         this.globalData.userInfo = latestUserInfo
         // 更新本地存储
         wx.setStorageSync('userInfo', latestUserInfo)
