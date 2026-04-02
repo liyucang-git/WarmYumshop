@@ -18,7 +18,19 @@
       <view class="user-nickname">{{userInfo.nickname || '点击登录'}}</view>
       <view class="user-status">{{userInfo.nickname ? '已登录' : '未登录'}}</view>
     </view>
-    <view class="arrow-icon" wx:if="{{!userInfo}}">></view>
+    <view class="arrow-icon" wx:if="{{userInfo && userInfo.nickname}}">></view>
+  </view>
+
+  <!-- 个人信息编辑区 -->
+  <view class="action-section" wx:if="{{userInfo && userInfo.nickname}}">
+    <view class="section-header">
+      <view class="section-title">个人信息</view>
+    </view>
+    <view class="action-item" bindtap="onEditProfileTap">
+      <view class="action-icon">✏️</view>
+      <view class="action-text">修改个人信息</view>
+      <view class="arrow-icon">></view>
+    </view>
   </view>
 
   <!-- 家庭信息区 -->

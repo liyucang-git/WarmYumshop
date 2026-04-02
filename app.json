@@ -3,6 +3,7 @@
     "pages/login/login",
     "pages/index/index",
     "pages/personal/personal",
+    "pages/edit-profile/edit-profile",
     "pages/add-dish/add-dish",
     "pages/dish-detail/dish-detail",
     "pages/create-family/create-family",

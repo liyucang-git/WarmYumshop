@@ -1,0 +1,54 @@
+<!-- 暖圆小铺 - 修改个人信息 -->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-left" bindtap="onBack">
+      <view class="back-icon">←</view>
+    </view>
+    <view class="header-title">修改个人信息</view>
+    <view class="header-right"></view>
+  </view>
+
+  <!-- 主要内容区 -->
+  <view class="content">
+    <!-- 头像修改 -->
+    <view class="profile-item">
+      <view class="item-label">头像</view>
+      <view class="avatar-container" bindtap="onAvatarTap">
+        <image 
+          class="avatar-image" 
+          src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}"
+          mode="aspectFill"
+        />
+        <view class="avatar-edit">
+          <text class="edit-text">更换</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 用户名修改 -->
+    <view class="profile-item">
+      <view class="item-label">用户名</view>
+      <input 
+        class="item-input" 
+        placeholder="请输入用户名" 
+        value="{{userInfo.nickname}}"
+        bindinput="onNicknameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-btn" bindtap="onSaveTap">
+      保存修改
+    </view>
+  </view>
+
+  <!-- 加载中提示 -->
+  <view class="loading-modal" wx:if="{{loading}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">保存中...</text>
+    </view>
+  </view>
+</view>

@@ -224,5 +224,12 @@ Page({
       content: '暖圆小铺是一款聚焦家庭场景的轻量工具小程序，帮助家庭记录和分享私房菜谱，留住美食时光。\n\n版本：1.0.0',
       showCancel: false
     })
+  },
+
+  // 跳转到修改个人信息页面
+  onEditProfileTap() {
+    wx.navigateTo({
+      url: '/pages/edit-profile/edit-profile'
+    })
   }
 })
