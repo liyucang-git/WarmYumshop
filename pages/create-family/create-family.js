@@ -70,6 +70,12 @@ Page({
         app.globalData.userInfo.role = 'creator'
         app.globalData.familyInfo = res.result.data
         
+        // 同步更新本地存储
+        wx.setStorage({
+          key: 'userInfo',
+          data: app.globalData.userInfo
+        })
+        
         wx.showToast({
           title: '创建成功',
           icon: 'success'

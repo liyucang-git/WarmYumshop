@@ -23,6 +23,9 @@ App({
       if (userInfo) {
         this.globalData.userInfo = userInfo
         console.log('已登录用户:', userInfo)
+        
+        // 从云函数重新获取最新用户信息
+        this.getLatestUserInfo(userInfo._id)
       } else {
         // 未登录，后续在登录页处理
         console.log('未找到登录信息')
@@ -30,6 +33,31 @@ App({
     } catch (error) {
       console.error('检查登录状态失败:', error)
     }
+  },
+  
+  // 从云函数获取最新用户信息
+  getLatestUserInfo(userId) {
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {
+        action: 'getUserInfo',
+        data: {
+          userId
+        }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        const latestUserInfo = res.result.data
+        this.globalData.userInfo = latestUserInfo
+        // 更新本地存储
+        wx.setStorageSync('userInfo', latestUserInfo)
+        console.log('已更新用户信息:', latestUserInfo)
+      }
+    })
+    .catch(err => {
+      console.error('获取最新用户信息失败:', err)
+    })
   },
 
   globalData: {

@@ -10,6 +10,7 @@
 .header {
   background: linear-gradient(to right, #FF6B35, #FF8E62);
   padding: 24rpx;
+  padding-top: calc(24rpx + env(safe-area-inset-top));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,6 +19,7 @@
   left: 0;
   right: 0;
   z-index: 100;
+  box-sizing: border-box;
 }
 
 .header-left,
@@ -214,6 +216,7 @@
 }
 
 .btn {
+  box-sizing: border-box;
   width: 100%;
   padding: 20rpx;
   border-radius: 32rpx;
@@ -238,6 +241,11 @@
 
 /* 响应式设计 */
 @media (max-width: 375px) {
+  .header {
+    padding: 20rpx;
+    padding-top: calc(20rpx + env(safe-area-inset-top));
+  }
+  
   .family-info-section {
     margin: 16rpx;
     padding: 24rpx;
@@ -270,6 +278,11 @@
 }
 
 @media (min-width: 750px) {
+  .header {
+    padding: 32rpx;
+    padding-top: 32rpx;
+  }
+  
   .family-info-section {
     margin: 32rpx;
     padding: 40rpx;

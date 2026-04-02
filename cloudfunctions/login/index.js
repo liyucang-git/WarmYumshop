@@ -44,7 +44,29 @@ exports.main = async (event, context) => {
   try {
     console.log('登录云函数调用, event:', event)
 
-    const { code, userInfo } = event
+    const { action, data, code, userInfo } = event
+
+    if (action === 'getUserInfo') {
+      // 获取用户信息
+      const { userId } = data
+      
+      console.log('获取用户信息:', { userId })
+      
+      const userResult = await usersCollection.doc(userId).get()
+      console.log('查询用户结果:', userResult.data)
+      
+      if (userResult.data) {
+        return {
+          success: true,
+          data: userResult.data
+        }
+      } else {
+        return {
+          success: false,
+          error: '用户不存在'
+        }
+      }
+    }
 
     // 从 context 中获取微信登录信息
     const openid = getOpenIdFromEnv(context)

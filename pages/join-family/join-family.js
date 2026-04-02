@@ -64,6 +64,12 @@ Page({
         app.globalData.userInfo.role = 'member'
         app.globalData.familyInfo = res.result.data
         
+        // 同步更新本地存储
+        wx.setStorage({
+          key: 'userInfo',
+          data: app.globalData.userInfo
+        })
+        
         wx.showToast({
           title: '加入成功',
           icon: 'success'

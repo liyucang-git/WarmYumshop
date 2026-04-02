@@ -4,6 +4,7 @@ const tcb = require('@cloudbase/node-sdk')
 // 初始化
 const app = tcb.init({ env: 'tangyuan-3gqjbda947233e77' })
 const db = app.database()
+const _ = db.command
 const familiesCollection = db.collection('families')
 const usersCollection = db.collection('users')
 
@@ -156,9 +157,9 @@ exports.main = async (event, context) => {
 
         // 清除用户家庭信息
         await usersCollection.doc(memberId).update({
-          familyId: '',
-          role: '',
-          joinTime: ''
+          familyId: _.remove(),
+          role: _.remove(),
+          joinTime: _.remove()
         })
 
         return {
@@ -183,9 +184,9 @@ exports.main = async (event, context) => {
         // 清除所有成员的家庭信息
         for (const member of family.members) {
           await usersCollection.doc(member.userId).update({
-            familyId: '',
-            role: '',
-            joinTime: ''
+            familyId: _.remove(),
+            role: _.remove(),
+            joinTime: _.remove()
           })
         }
 
@@ -220,9 +221,9 @@ exports.main = async (event, context) => {
 
         // 清除用户家庭信息
         await usersCollection.doc(userId).update({
-          familyId: '',
-          role: '',
-          joinTime: ''
+          familyId: _.remove(),
+          role: _.remove(),
+          joinTime: _.remove()
         })
 
         return {

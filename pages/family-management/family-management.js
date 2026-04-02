@@ -216,6 +216,12 @@ Page({
         app.globalData.userInfo.role = ''
         app.globalData.familyInfo = null
         
+        // 同步更新本地存储
+        wx.setStorage({
+          key: 'userInfo',
+          data: app.globalData.userInfo
+        })
+        
         wx.showToast({
           title: '已离开家庭',
           icon: 'success'
@@ -266,6 +272,12 @@ Page({
         app.globalData.userInfo.familyId = ''
         app.globalData.userInfo.role = ''
         app.globalData.familyInfo = null
+        
+        // 同步更新本地存储
+        wx.setStorage({
+          key: 'userInfo',
+          data: app.globalData.userInfo
+        })
         
         wx.showToast({
           title: '家庭已解散',
