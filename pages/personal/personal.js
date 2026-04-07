@@ -7,45 +7,77 @@ Page({
   },
 
   onLoad(options) {
-    const app = getApp()
-    if (!app.checkLoginAndRedirect('pages/personal/personal', options)) {
-      return
-    }
-    this.checkLoginAndLoad()
+    // 等待 userInfo 初始化后再检查登录状态
+    this.waitForUserInfoInit(() => {
+      const app = getApp()
+      if (!app.checkLoginAndRedirect('pages/personal/personal', options)) {
+        return
+      }
+      this.checkLoginAndLoad()
+    })
   },
 
   onShow() {
-    this.checkLoginAndLoad()
-    
-    // 检查是否有邀请码
-    const app = getApp()
-    if (app && app.globalData && app.globalData.inviteCode) {
-      const inviteCode = app.globalData.inviteCode
+    // 等待 userInfo 初始化后再检查
+    this.waitForUserInfoInit(() => {
+      this.checkLoginAndLoad()
       
-      // 获取当前用户信息
-      const userInfo = this.data.userInfo
-      
-      if (!userInfo || !userInfo._id) {
-        // 未登录，跳转到登录页
-        app.globalData.inviteCode = null
-        wx.navigateTo({
-          url: `/pages/login/login?inviteCode=${inviteCode}`
-        })
-      } else if (userInfo.familyId) {
-        // 已加入家庭，清除邀请码并提示
-        app.globalData.inviteCode = null
-        wx.showToast({
-          title: '您已加入家庭',
-          icon: 'none'
-        })
-      } else {
-        // 未加入家庭，跳转到加入家庭页面
-        app.globalData.inviteCode = null
-        wx.navigateTo({
-          url: `/pages/join-family/join-family?inviteCode=${inviteCode}`
-        })
+      // 检查是否有邀请码
+      const app = getApp()
+      if (app && app.globalData && app.globalData.inviteCode) {
+        const inviteCode = app.globalData.inviteCode
+        
+        // 获取当前用户信息
+        const userInfo = this.data.userInfo
+        
+        if (!userInfo || !userInfo._id) {
+          // 未登录，跳转到登录页
+          app.globalData.inviteCode = null
+          wx.navigateTo({
+            url: `/pages/login/login?inviteCode=${inviteCode}`
+          })
+        } else if (userInfo.familyId) {
+          // 已加入家庭，清除邀请码并提示
+          app.globalData.inviteCode = null
+          wx.showToast({
+            title: '您已加入家庭',
+            icon: 'none'
+          })
+        } else {
+          // 未加入家庭，跳转到加入家庭页面
+          app.globalData.inviteCode = null
+          wx.navigateTo({
+            url: `/pages/join-family/join-family?inviteCode=${inviteCode}`
+          })
+        }
       }
+    })
+  },
+  
+  // 等待 userInfo 初始化完成
+  waitForUserInfoInit(callback, maxWaitTime = 3000) {
+    const app = getApp()
+    const startTime = Date.now()
+    
+    const check = () => {
+      // 如果 userInfo 已初始化或有 _id，直接回调
+      if (app.globalData && app.globalData.userInfo && app.globalData.userInfo._id) {
+        if (callback) callback()
+        return
+      }
+      
+      // 超时则不再等待
+      if (Date.now() - startTime > maxWaitTime) {
+        console.log('等待 userInfo 初始化超时')
+        if (callback) callback()
+        return
+      }
+      
+      // 继续等待
+      setTimeout(check, 100)
     }
+    
+    check()
   },
 
   // 检查登录状态并加载用户信息

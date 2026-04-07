@@ -17,32 +17,62 @@ Page({
       this.setData({ inviteCode: options.inviteCode })
     }
     
-    // 检查是否已登录
-    if (app.globalData && app.globalData.userInfo) {
-      // 已登录且已加入家庭，跳转到首页
-      if (app.globalData.userInfo.familyId) {
-        if (!this.data.isNavigating) {
-          this.setData({ isNavigating: true })
-          wx.switchTab({
-            url: '/pages/index/index',
-            fail: () => {
-              this.setData({ isNavigating: false })
-            }
-          })
-        }
-      } else {
-        // 已登录但未加入家庭，跳转到个人中心
-        if (!this.data.isNavigating) {
-          this.setData({ isNavigating: true })
-          wx.switchTab({
-            url: '/pages/personal/personal',
-            fail: () => {
-              this.setData({ isNavigating: false })
-            }
-          })
+    // 等待 globalData.userInfo 初始化完成
+    this.waitForUserInfoInit(() => {
+      // 检查是否已登录
+      if (app.globalData && app.globalData.userInfo && app.globalData.userInfo._id) {
+        // 已登录且已加入家庭，跳转到首页
+        if (app.globalData.userInfo.familyId) {
+          if (!this.data.isNavigating) {
+            this.setData({ isNavigating: true })
+            wx.switchTab({
+              url: '/pages/index/index',
+              fail: () => {
+                this.setData({ isNavigating: false })
+              }
+            })
+          }
+        } else {
+          // 已登录但未加入家庭，跳转到个人中心
+          if (!this.data.isNavigating) {
+            this.setData({ isNavigating: true })
+            wx.switchTab({
+              url: '/pages/personal/personal',
+              fail: () => {
+                this.setData({ isNavigating: false })
+              }
+            })
+          }
         }
       }
+      // 如果 userInfo 为空，说明未登录，停留在登录页
+    })
+  },
+  
+  // 等待 userInfo 初始化完成
+  waitForUserInfoInit(callback, maxWaitTime = 3000) {
+    const app = getApp()
+    const startTime = Date.now()
+    
+    const check = () => {
+      // 如果 userInfo 已初始化或有 _id，直接回调
+      if (app.globalData && app.globalData.userInfo && app.globalData.userInfo._id) {
+        if (callback) callback()
+        return
+      }
+      
+      // 超时则不再等待
+      if (Date.now() - startTime > maxWaitTime) {
+        console.log('等待 userInfo 初始化超时')
+        if (callback) callback()
+        return
+      }
+      
+      // 继续等待
+      setTimeout(check, 100)
     }
+    
+    check()
   },
 
   // 获取用户信息
