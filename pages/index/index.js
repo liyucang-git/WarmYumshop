@@ -6,7 +6,6 @@ Page({
     activeCategory: 'all',
     viewMode: 'grid', // grid or list
     loading: false,
-    refreshing: false,
     isEmpty: false,
     hasMore: true,
     searchQuery: '',
@@ -14,6 +13,8 @@ Page({
     showActionSheet: false,
     showDeleteDialog: false,
     selectedDish: null,
+    pageSize: 6,
+    page: 1,
     actionItems: [
       { text: '编辑', value: 'edit' },
       { text: '删除', value: 'delete' }
@@ -32,6 +33,39 @@ Page({
   onShow() {
     // 页面显示时刷新数据
     this.getDishes()
+  },
+
+  onReady() {
+    // 初始化观察器，监听加载更多元素
+    this.initLoadMoreObserver()
+  },
+
+  onUnload() {
+    // 页面卸载时断开观察器
+    if (this.loadMoreObserver) {
+      this.loadMoreObserver.disconnect()
+    }
+  },
+
+  // 初始化加载更多观察器
+  initLoadMoreObserver() {
+    // 延迟执行，确保元素已渲染
+    setTimeout(() => {
+      if (this.loadMoreObserver) {
+        this.loadMoreObserver.disconnect()
+      }
+      
+      this.loadMoreObserver = wx.createIntersectionObserver(this)
+      
+      this.loadMoreObserver
+        .relativeToViewport({ bottom: 50 })
+        .observe('#load-more-trigger', (res) => {
+          console.log('触发观察:', res.intersectionRatio, 'hasMore:', this.data.hasMore, 'loading:', this.data.loading)
+          if (res.intersectionRatio > 0 && this.data.hasMore && !this.data.loading) {
+            this.onLoadMore()
+          }
+        })
+    }, 500)
   },
 
   // 获取菜品列表
@@ -60,13 +94,15 @@ Page({
           familyId: userInfo.familyId,
           category: this.data.activeCategory === 'all' ? '' : this.data.activeCategory,
           searchQuery: this.data.searchQuery,
-          sortBy: 'latest'
+          sortBy: 'latest',
+          page: 1,
+          pageSize: this.data.pageSize
         }
       }
     })
     .then(res => {
       if (res.result.success) {
-        const dishes = res.result.data
+        const dishes = res.result.data || []
         if (dishes.length > 0) {
           // 处理时间格式和分类
           dishes.forEach((dish, index) => {
@@ -83,14 +119,18 @@ Page({
           dishList: dishes,
           isEmpty: dishes.length === 0,
           loading: false,
-          refreshing: false
+          page: 1,
+          hasMore: dishes.length >= this.data.pageSize
+        }, () => {
+          // 数据更新后初始化观察器
+          this.initLoadMoreObserver()
         })
       } else {
         wx.showToast({
           title: '获取菜品失败',
           icon: 'none'
         })
-        this.setData({ loading: false, refreshing: false })
+        this.setData({ loading: false })
       }
     })
     .catch(err => {
@@ -99,7 +139,7 @@ Page({
         title: '网络错误',
         icon: 'none'
       })
-      this.setData({ loading: false, refreshing: false })
+      this.setData({ loading: false })
     })
   },
 
@@ -131,15 +171,67 @@ Page({
     }, 300)
   },
 
-  // 下拉刷新
-  onRefresh() {
-    this.setData({ refreshing: true })
-    this.getDishes()
-  },
-
   // 上拉加载更多
   onLoadMore() {
-    // 这里可以实现分页加载
+    if (this.data.loading || !this.data.hasMore) {
+      return
+    }
+
+    const app = getApp()
+    if (!app || !app.globalData || !app.globalData.userInfo || !app.globalData.userInfo.familyId) {
+      return
+    }
+
+    this.setData({ loading: true })
+    const nextPage = this.data.page + 1
+
+    wx.cloud.callFunction({
+      name: 'dish',
+      data: {
+        action: 'getDishes',
+        data: {
+          familyId: app.globalData.userInfo.familyId,
+          category: this.data.activeCategory === 'all' ? '' : this.data.activeCategory,
+          searchQuery: this.data.searchQuery,
+          sortBy: 'latest',
+          page: nextPage,
+          pageSize: this.data.pageSize
+        }
+      }
+    })
+    .then(res => {
+      if (res.result.success) {
+        const newDishes = res.result.data || []
+        if (newDishes.length > 0) {
+          // 处理时间格式和分类
+          newDishes.forEach(dish => {
+            if (dish.createTime) {
+              dish.formattedTime = this.formatTime(dish.createTime)
+            }
+            if (!dish.categories || !Array.isArray(dish.categories)) {
+              dish.categories = []
+            }
+          })
+        }
+        this.setData({
+          dishList: [...this.data.dishList, ...newDishes],
+          loading: false,
+          page: nextPage,
+          hasMore: newDishes.length >= this.data.pageSize
+        }, () => {
+          // 数据更新后重新初始化观察器
+          setTimeout(() => {
+            this.initLoadMoreObserver()
+          }, 100)
+        })
+      } else {
+        this.setData({ loading: false })
+      }
+    })
+    .catch(err => {
+      console.error('加载更多失败:', err)
+      this.setData({ loading: false })
+    })
   },
 
   // 菜品点击

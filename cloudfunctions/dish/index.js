@@ -63,7 +63,7 @@ exports.main = async (event, context) => {
       }
       
       case 'getDishes': {
-        const { familyId, category, searchQuery, sortBy } = data
+        const { familyId, category, searchQuery, sortBy, page = 1, pageSize = 6 } = data
 
 
         if (!familyId) {
@@ -104,7 +104,9 @@ exports.main = async (event, context) => {
             query = query.orderBy('createTime', 'asc')
           }
 
-          const result = await query.get()
+          // 分页
+          const skip = (page - 1) * pageSize
+          const result = await query.skip(skip).limit(pageSize).get()
           
           // 确保categories字段是数组
           const processedData = result.data.map(dish => {

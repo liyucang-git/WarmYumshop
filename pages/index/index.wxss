@@ -125,11 +125,10 @@ page {
 
 /* 菜品列表区 */
 .dish-scroll {
-  flex-grow: 1;
+  height: calc(100vh - 260rpx);
   padding: 16rpx 24rpx;
   width: 100%;
   box-sizing: border-box;
-  overflow-y: auto;
 }
 
 /* 空状态 */
