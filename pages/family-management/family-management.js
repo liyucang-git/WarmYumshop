@@ -19,39 +19,6 @@ Page({
       return
     }
     this.getFamilyInfo()
-    
-    // 显示分享菜单
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
-    })
-  },
-  
-  // 自定义分享内容
-  onShareAppMessage() {
-    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
-    const inviteCode = this.data.familyInfo.inviteCode
-    
-    console.log('onShareAppMessage 被调用')
-    console.log('familyName:', familyName)
-    console.log('inviteCode:', inviteCode)
-    
-    return {
-      title: `邀请你加入「${familyName}」，一起记录美味时光`,
-      path: `/pages/join-family/join-family?inviteCode=${inviteCode}`,
-      imageUrl: '/images/暖圆小铺.jpeg'
-    }
-  },
-
-  // 自定义分享到朋友圈
-  onShareTimeline() {
-    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
-    
-    return {
-      title: `欢迎加入「${familyName}」，一起记录美味时光`,
-      query: '',
-      imageUrl: '/images/暖圆小铺.jpeg'
-    }
   },
 
   // 获取家庭信息
@@ -133,45 +100,13 @@ Page({
         data: inviteCode,
         success: () => {
           wx.showToast({
-            title: '复制成功',
-            icon: 'success'
+            title: '已复制，邀请码：' + inviteCode,
+            icon: 'success',
+            duration: 2000
           })
         }
       })
     }
-  },
-
-  // 邀请微信好友
-  inviteFriend() {
-    const inviteCode = this.data.familyInfo.inviteCode
-    const familyName = this.data.familyInfo.name || '暖圆小铺家庭'
-    
-    // 显示操作菜单
-    wx.showActionSheet({
-      itemList: ['复制邀请码', '点击右上角转发'],
-      success: (res) => {
-        if (res.tapIndex === 0) {
-          // 复制邀请码
-          wx.setClipboardData({
-            data: inviteCode,
-            success: () => {
-              wx.showToast({
-                title: '邀请码已复制',
-                icon: 'success'
-              })
-            }
-          })
-        } else if (res.tapIndex === 1) {
-          // 提示用户点击右上角转发
-          wx.showModal({
-            title: '转发邀请',
-            content: `邀请好友加入「${familyName}」\n\n请点击右上角「···」选择「转发」`,
-            showCancel: false,
-            confirmText: '好的'
-          })
-        }
-      }
-    })
   },
 
   // 移除成员

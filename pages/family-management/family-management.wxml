@@ -27,12 +27,9 @@
       <view class="invite-code-label">邀请码</view>
       <view class="invite-code-content">
         <text class="invite-code">{{familyInfo.inviteCode}}</text>
-        <view class="copy-btn" bindtap="copyInviteCode">复制</view>
+        <view class="copy-btn" bindtap="copyInviteCode">复制邀请码</view>
       </view>
-      <view class="invite-hint">分享邀请码给家人，邀请他们加入</view>
-      <view class="invite-friend-btn" bindtap="inviteFriend">
-        <text class="invite-friend-text">邀请微信好友</text>
-      </view>
+      <view class="invite-hint">复制邀请码发送给家人，让他们手动输入加入</view>
     </view>
   </view>
 

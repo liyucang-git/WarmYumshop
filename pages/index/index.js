@@ -22,6 +22,7 @@ Page({
 
   onLoad(options) {
     const app = getApp()
+    
     if (!app.checkLoginAndRedirect('pages/index/index', options)) {
       return
     }

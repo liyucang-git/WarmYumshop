@@ -1,0 +1,9 @@
+{
+  "name": "createQRCode",
+  "version": "1.0.0",
+  "description": "生成小程序邀请二维码",
+  "dependencies": {
+    "qrcode": "^1.5.3",
+    "wx-server-sdk": "^2.6.3"
+  }
+}

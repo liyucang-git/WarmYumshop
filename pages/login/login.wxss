@@ -209,6 +209,19 @@ page {
   margin-bottom: 40rpx;
 }
 
+/* 一键登录按钮（白色） */
+.quick-login .login-btn {
+  background: #ffffff;
+  color: #FF6B35;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.quick-login .login-btn:active {
+  background: #f5f5f5;
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+}
+
 /* 云端用户卡片 */
 .cloud-user-card {
   width: 100%;
@@ -305,8 +318,12 @@ page {
 }
 
 .modal-body {
-  padding: 32rpx;
+  padding-top: 32rpx;
+  padding-left: 32rpx;
+  padding-bottom: 32rpx;
   max-height: 60vh;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .agreement-content {
@@ -314,6 +331,8 @@ page {
   color: #666666;
   line-height: 1.8;
   white-space: pre-wrap;
+  padding-right: 32rpx;
+  padding-bottom: 32rpx;
 }
 
 .modal-footer {

@@ -199,37 +199,6 @@ page {
   line-height: 1.2;
 }
 
-.invite-friend-btn {
-  margin-top: 24rpx;
-  padding: 20rpx 32rpx;
-  background: linear-gradient(to right, #FF6B35, #FF8E62);
-  border-radius: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4rpx 12rpx rgba(255, 107, 53, 0.2);
-}
-
-.invite-friend-btn:active {
-  opacity: 0.8;
-  transform: scale(0.98);
-  box-shadow: 0 2rpx 8rpx rgba(255, 107, 53, 0.15);
-}
-
-.invite-friend-icon {
-  font-size: 32rpx;
-  margin-right: 12rpx;
-}
-
-.invite-friend-text {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: white;
-  line-height: 1.2;
-}
-
 /* 成员列表 */
 .members-section {
   background-color: white;
