@@ -55,7 +55,7 @@ Page({
   },
   
   // 等待 userInfo 初始化完成
-  waitForUserInfoInit(callback, maxWaitTime = 3000) {
+  waitForUserInfoInit(callback, maxWaitTime = 1000) {
     const app = getApp()
     const startTime = Date.now()
     
@@ -237,10 +237,10 @@ Page({
     const inviteCode = this.data.familyInfo.inviteCode
     if (inviteCode) {
       wx.setClipboardData({
-        data: inviteCode,
+        data: '邀请码：' + inviteCode,
         success: () => {
           wx.showToast({
-            title: '复制成功',
+            title: '邀请码已复制',
             icon: 'success'
           })
         }

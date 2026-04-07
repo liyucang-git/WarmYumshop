@@ -97,10 +97,10 @@ Page({
     const inviteCode = this.data.familyInfo.inviteCode
     if (inviteCode) {
       wx.setClipboardData({
-        data: inviteCode,
+        data: '邀请码：' + inviteCode,
         success: () => {
           wx.showToast({
-            title: '已复制，邀请码：' + inviteCode,
+            title: '邀请码已复制',
             icon: 'success',
             duration: 2000
           })
