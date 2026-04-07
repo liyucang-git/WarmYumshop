@@ -183,6 +183,12 @@ Page({
     }
 
     this.setData({ loading: true })
+    
+    // 加载时断开观察器，避免触发重排
+    if (this.loadMoreObserver) {
+      this.loadMoreObserver.disconnect()
+    }
+
     const nextPage = this.data.page + 1
 
     wx.cloud.callFunction({
@@ -222,7 +228,7 @@ Page({
           // 数据更新后重新初始化观察器
           setTimeout(() => {
             this.initLoadMoreObserver()
-          }, 100)
+          }, 300)
         })
       } else {
         this.setData({ loading: false })

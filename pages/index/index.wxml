@@ -73,12 +73,6 @@
       </view>
     </view>
 
-    <!-- 加载中状态 -->
-    <view wx:if="{{loading && !isEmpty}}" class="loading-container">
-      <view class="loading-spinner"></view>
-      <text class="loading-text">加载中...</text>
-    </view>
-
     <!-- 网格视图 -->
     <view wx:if="{{viewMode === 'grid' && !isEmpty}}" class="grid-container">
       <view 
@@ -179,7 +173,7 @@
     </view>
 
     <!-- 加载更多提示 -->
-    <view wx:if="{{hasMore && !loading && !isEmpty}}" class="load-more">
+    <view wx:if="{{hasMore && !isEmpty}}" class="load-more">
       <text class="load-more-text">上拉加载更多</text>
     </view>
     
