@@ -16,29 +16,69 @@
       <view class="app-slogan">记录家庭美味，留住幸福时光</view>
     </view>
 
-    <!-- 登录说明 -->
-    <view class="login-info">
-      <view class="info-text">
-        通过微信登录，开始使用暖圆小铺
-      </view>
-      <view class="info-desc">
-        创建属于您的家庭菜谱，与家人分享美味
-      </view>
-    </view>
+    <!-- 新用户：填写信息 -->
+    <view class="user-card" wx:if="{{needFillInfo}}">
+      <!-- 头像 -->
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar-img" src="{{avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <view class="avatar-tip">点击选择头像</view>
+      </button>
 
-    <!-- 登录按钮 -->
-    <view class="login-btn-wrapper">
+      <!-- 昵称 -->
+      <view class="nickname-row">
+        <text class="nickname-label">昵称</text>
+        <input 
+          class="nickname-input" 
+          type="nickname" 
+          placeholder="点击获取微信昵称" 
+          value="{{nickname}}"
+          bindinput="onNicknameInput"
+          bindblur="onNicknameBlur"
+        />
+      </view>
+
+      <!-- 登录按钮 -->
       <button 
-        class="login-btn" 
-        open-type="getUserInfo"
-        bindgetuserinfo="onGetUserInfo"
-        loading="{{loading}}"
+        class="login-btn {{canLogin ? '' : 'disabled'}}" 
+        bindtap="onLogin"
+        disabled="{{!canLogin}}"
       >
-        <text>微信一键登录</text>
+        <text>{{loading ? '登录中...' : '进入暖圆小铺'}}</text>
       </button>
     </view>
 
-    <!-- 用户协议 -->
+    <!-- 老用户：一键登录（显示之前保存的信息） -->
+    <view class="quick-login" wx:elif="{{hasCloudUser}}">
+      <view class="cloud-user-card">
+        <image 
+          class="cloud-avatar" 
+          src="{{cloudUserInfo.avatarUrl || '/images/default-avatar.png'}}" 
+          mode="aspectFill" 
+        />
+        <view class="cloud-nickname">{{cloudUserInfo.nickname || '用户'}}</view>
+        <view class="cloud-tip">点击下方按钮直接登录</view>
+      </view>
+      <button 
+        class="login-btn" 
+        bindtap="onQuickLogin"
+        loading="{{loading}}"
+      >
+        <text>{{loading ? '登录中...' : '微信一键登录'}}</text>
+      </button>
+    </view>
+
+    <!-- 本地缓存用户：一键登录 -->
+    <view class="quick-login" wx:elif="{{!needFillInfo && !hasCloudUser}}">
+      <button 
+        class="login-btn" 
+        bindtap="onQuickLogin"
+        loading="{{loading}}"
+      >
+        <text>{{loading ? '登录中...' : '微信一键登录'}}</text>
+      </button>
+    </view>
+
+    <!-- 协议 -->
     <view class="agreement">
       <text class="agreement-text">
         登录即表示同意

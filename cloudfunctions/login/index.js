@@ -96,17 +96,43 @@ exports.main = async (event, context) => {
     const userResult = await usersCollection.where({ openid }).get()
 
     if (userResult.data.length > 0) {
-      // 用户已存在，返回用户信息
+      // 用户已存在
+      const existingUser = userResult.data[0]
+      
+      // 如果有传入新的 userInfo 且与现有不同，则更新
+      if (userInfo && userInfo.avatarUrl && userInfo.avatarUrl !== existingUser.avatarUrl) {
+        await usersCollection.doc(existingUser._id).update({
+          avatarUrl: userInfo.avatarUrl
+        })
+        existingUser.avatarUrl = userInfo.avatarUrl
+      }
+      if (userInfo && userInfo.nickName && userInfo.nickName !== existingUser.nickname) {
+        await usersCollection.doc(existingUser._id).update({
+          nickname: userInfo.nickName
+        })
+        existingUser.nickname = userInfo.nickName
+      }
+      
       return {
         success: true,
-        data: userResult.data[0]
+        data: existingUser
       }
     } else {
-      // 用户不存在，创建新用户
+      // 用户不存在
+      // 如果没有传入 userInfo（检查登录状态场景），只返回不存在，不创建
+      if (!userInfo || (!userInfo.avatarUrl && !userInfo.nickName)) {
+        return {
+          success: true,
+          data: null,
+          exists: false
+        }
+      }
+      
+      // 有传入 userInfo，创建新用户
       const newUser = {
         openid,
-        nickname: userInfo?.nickName || '',
-        avatarUrl: userInfo?.avatarUrl || '',
+        nickname: userInfo.nickName || '',
+        avatarUrl: userInfo.avatarUrl || '',
         familyId: '',
         role: '',
         joinTime: '',

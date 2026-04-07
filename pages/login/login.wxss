@@ -1,6 +1,5 @@
 /* 登录页样式 */
 
-/* 页面根元素背景色 */
 page {
   background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
 }
@@ -84,80 +83,169 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 80rpx;
+  margin-bottom: 60rpx;
 }
 
 .logo-image {
-  width: 160rpx;
-  height: 160rpx;
+  width: 140rpx;
+  height: 140rpx;
   border-radius: 50%;
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
-  margin-bottom: 30rpx;
+  margin-bottom: 24rpx;
 }
 
 .app-name {
-  font-size: 56rpx;
+  font-size: 52rpx;
   font-weight: 600;
   color: #ffffff;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
   letter-spacing: 4rpx;
 }
 
 .app-slogan {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: rgba(255, 255, 255, 0.9);
   text-align: center;
   line-height: 1.6;
 }
 
-/* 登录说明 */
-.login-info {
-  margin-bottom: 60rpx;
-  text-align: center;
+/* 用户信息卡片 */
+.user-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.info-text {
-  font-size: 32rpx;
-  color: #ffffff;
-  margin-bottom: 12rpx;
-  font-weight: 500;
+/* 头像按钮 */
+.avatar-btn {
+  width: 160rpx;
+  height: 200rpx;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.info-desc {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.6;
+.avatar-btn::after {
+  border: none;
+}
+
+.avatar-img {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 4rpx solid #f0f0f0;
+}
+
+.avatar-tip {
+  font-size: 22rpx;
+  color: #999999;
+  margin-top: 12rpx;
+}
+
+/* 昵称输入 */
+.nickname-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin: 32rpx 0 40rpx;
+}
+
+.nickname-label {
+  font-size: 28rpx;
+  color: #333333;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.nickname-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+  background: transparent;
 }
 
 /* 登录按钮 */
-.login-btn-wrapper {
-  width: 100%;
-  margin-bottom: 40rpx;
-}
-
 .login-btn {
   width: 100%;
   height: 96rpx;
-  background: #ffffff;
-  color: #FF6B35;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8B5C 100%);
+  color: #ffffff;
   font-size: 32rpx;
   font-weight: 600;
   border-radius: 48rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 53, 0.3);
   border: none;
-  transition: all 0.3s ease;
 }
 
-.login-btn:active {
+.login-btn.disabled {
+  background: #e0e0e0;
+  color: #999999;
+  box-shadow: none;
+}
+
+.login-btn:active:not(.disabled) {
   transform: scale(0.98);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 53, 0.3);
 }
 
-/* 用户协议 */
+/* 一键登录 */
+.quick-login {
+  width: 100%;
+  margin-bottom: 40rpx;
+}
+
+/* 云端用户卡片 */
+.cloud-user-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx;
+  margin-bottom: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.cloud-avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  border: 4rpx solid #f0f0f0;
+  margin-bottom: 20rpx;
+}
+
+.cloud-nickname {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12rpx;
+}
+
+.cloud-tip {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 协议 */
 .agreement {
+  margin-top: 48rpx;
   text-align: center;
 }
 
@@ -214,7 +302,6 @@ page {
   font-size: 48rpx;
   color: #999999;
   line-height: 1;
-  cursor: pointer;
 }
 
 .modal-body {
@@ -243,9 +330,4 @@ page {
   font-weight: 500;
   text-align: center;
   border-radius: 12rpx;
-  cursor: pointer;
-}
-
-.modal-btn:active {
-  opacity: 0.8;
 }

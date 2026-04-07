@@ -5,7 +5,13 @@ Page({
     isNavigating: false,
     showAgreementModal: false,
     agreementTitle: '',
-    agreementContent: ''
+    agreementContent: '',
+    avatarUrl: '',
+    nickname: '',
+    canLogin: false,
+    needFillInfo: false,  // 是否需要填写信息（新用户）
+    hasCloudUser: false,  // 云端是否有用户记录
+    cloudUserInfo: null,  // 云端用户信息
   },
 
   // 页面加载
@@ -17,204 +23,256 @@ Page({
       this.setData({ inviteCode: options.inviteCode })
     }
     
-    // 等待 globalData.userInfo 初始化完成
-    this.waitForUserInfoInit(() => {
-      // 检查是否已登录
-      if (app.globalData && app.globalData.userInfo && app.globalData.userInfo._id) {
-        // 已登录且已加入家庭，跳转到首页
-        if (app.globalData.userInfo.familyId) {
-          if (!this.data.isNavigating) {
-            this.setData({ isNavigating: true })
-            wx.switchTab({
-              url: '/pages/index/index',
-              fail: () => {
-                this.setData({ isNavigating: false })
-              }
-            })
-          }
+    // 先检查本地存储中是否有用户信息
+    try {
+      const localUserInfo = wx.getStorageSync('userInfo')
+      
+      if (localUserInfo && localUserInfo._id) {
+        // 有本地用户信息，更新到 globalData
+        app.globalData.userInfo = localUserInfo
+        
+        // 已登录，跳转到对应页面
+        if (localUserInfo.familyId) {
+          this.navigateTo('/pages/index/index')
         } else {
-          // 已登录但未加入家庭，跳转到个人中心
-          if (!this.data.isNavigating) {
-            this.setData({ isNavigating: true })
-            wx.switchTab({
-              url: '/pages/personal/personal',
-              fail: () => {
-                this.setData({ isNavigating: false })
-              }
-            })
-          }
+          this.navigateTo('/pages/personal/personal')
         }
+        return
       }
-      // 如果 userInfo 为空，说明未登录，停留在登录页
+    } catch (e) {
+      console.error('读取本地用户信息失败:', e)
+    }
+    
+    // 本地没有用户信息，检查云端是否有记录
+    this.checkCloudUserInfo()
+  },
+  
+  // 检查云端是否有用户记录
+  checkCloudUserInfo() {
+    wx.showLoading({ title: '检查登录状态...', mask: true })
+    
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {}  // 不传 userInfo，只查询
+    })
+    .then(res => {
+      wx.hideLoading()
+      console.log('检查云端用户结果:', res)
+      
+      const app = getApp()
+      
+      if (res.result.success && res.result.data && res.result.data._id) {
+        // 云端有用户记录，恢复登录状态
+        let userData = res.result.data
+        
+        // 处理可能的嵌套 data 字段
+        if (userData.data && typeof userData.data === 'object') {
+          userData = {
+            _id: userData._id || userData.data._id,
+            openid: userData.openid || userData.data.openid,
+            nickname: userData.data.nickname || userData.nickname,
+            avatarUrl: userData.data.avatarUrl || userData.avatarUrl,
+            familyId: userData.familyId || userData.data?.familyId,
+            role: userData.role || userData.data?.role,
+            joinTime: userData.joinTime || userData.data?.joinTime,
+            ...userData,
+            ...userData.data
+          }
+          delete userData.data
+        }
+        
+        console.log('恢复云端用户数据:', userData)
+        
+        // 保存到本地和全局
+        app.globalData.userInfo = userData
+        wx.setStorage({ key: 'userInfo', data: userData })
+        
+        // 显示一键登录（带头像昵称）
+        this.setData({ 
+          hasCloudUser: true,
+          cloudUserInfo: {
+            nickname: userData.nickname || '用户',
+            avatarUrl: userData.avatarUrl || ''
+          }
+        })
+      } else {
+        // 云端没有记录，显示新用户填写界面
+        this.setData({ needFillInfo: true })
+      }
+    })
+    .catch(err => {
+      wx.hideLoading()
+      console.error('检查云端用户失败:', err)
+      // 网络错误，显示新用户填写界面
+      this.setData({ needFillInfo: true })
     })
   },
   
-  // 等待 userInfo 初始化完成
-  waitForUserInfoInit(callback, maxWaitTime = 3000) {
-    const app = getApp()
-    const startTime = Date.now()
-    
-    const check = () => {
-      // 如果 userInfo 已初始化或有 _id，直接回调
-      if (app.globalData && app.globalData.userInfo && app.globalData.userInfo._id) {
-        if (callback) callback()
-        return
-      }
-      
-      // 超时则不再等待
-      if (Date.now() - startTime > maxWaitTime) {
-        console.log('等待 userInfo 初始化超时')
-        if (callback) callback()
-        return
-      }
-      
-      // 继续等待
-      setTimeout(check, 100)
+  // 统一跳转方法
+  navigateTo(url) {
+    if (!this.data.isNavigating) {
+      this.setData({ isNavigating: true })
+      wx.switchTab({
+        url,
+        fail: () => {
+          this.setData({ isNavigating: false })
+        }
+      })
     }
-    
-    check()
   },
 
-  // 获取用户信息
-  onGetUserInfo(e) {
-    const userInfo = e.detail.userInfo
-    if (!userInfo) {
-      wx.showToast({
-        title: '需要授权才能继续使用',
-        icon: 'none'
-      })
+  // 选择头像
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+    console.log('选择的头像:', avatarUrl)
+    this.setData({ 
+      avatarUrl,
+      tempAvatarPath: avatarUrl
+    })
+    this.checkCanLogin()
+  },
+
+  // 昵称输入
+  onNicknameInput(e) {
+    this.setData({ nickname: e.detail.value })
+    this.checkCanLogin()
+  },
+
+  // 昵称输入完成
+  onNicknameBlur(e) {
+    const nickname = e.detail.value.trim()
+    this.setData({ nickname })
+    this.checkCanLogin()
+  },
+
+  // 检查是否可以登录
+  checkCanLogin() {
+    const { avatarUrl, nickname } = this.data
+    const canLogin = avatarUrl && avatarUrl.length > 0 && nickname && nickname.trim().length > 0
+    this.setData({ canLogin })
+  },
+
+  // 登录
+  async onLogin() {
+    const { tempAvatarPath, avatarUrl, nickname, inviteCode } = this.data
+    
+    if (!avatarUrl) {
+      wx.showToast({ title: '请选择头像', icon: 'none' })
+      return
+    }
+    if (!nickname || !nickname.trim()) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
       return
     }
 
     this.setData({ loading: true })
 
+    let finalAvatarUrl = avatarUrl
+
+    // 上传头像到云存储
+    if (tempAvatarPath && (tempAvatarPath.startsWith('http://tmp') || tempAvatarPath.startsWith('wxfile://'))) {
+      try {
+        wx.showLoading({ title: '上传头像中...', mask: true })
+        
+        const timestamp = Date.now()
+        const cloudPath = `avatars/${timestamp}.png`
+        
+        const uploadResult = await wx.cloud.uploadFile({
+          cloudPath,
+          filePath: tempAvatarPath
+        })
+        
+        const urlResult = await wx.cloud.getTempFileURL({
+          fileList: [uploadResult.fileID]
+        })
+        
+        if (urlResult.fileList && urlResult.fileList[0] && urlResult.fileList[0].tempFileURL) {
+          finalAvatarUrl = urlResult.fileList[0].tempFileURL
+        }
+        
+        wx.hideLoading()
+      } catch (uploadErr) {
+        console.error('头像上传失败:', uploadErr)
+        wx.hideLoading()
+        wx.showToast({ title: '头像上传失败，使用默认头像', icon: 'none' })
+        finalAvatarUrl = '/images/default-avatar.png'
+      }
+    }
+
+    const userInfo = {
+      nickName: nickname.trim(),
+      avatarUrl: finalAvatarUrl
+    }
+
     // 调用登录云函数
     wx.cloud.callFunction({
       name: 'login',
-      data: {
-        userInfo
-      }
+      data: { userInfo }
     })
     .then(res => {
+      console.log('登录结果:', res)
       if (res.result.success) {
+        // 获取用户数据，确保 _id 被正确保留
         let userData = res.result.data
         
-        // 处理嵌套的data字段（如果存在）
-        if (userData.data && (userData.data.nickname || userData.data.avatarUrl)) {
-          userData = {
-            ...userData,
-            nickname: userData.data.nickname || userData.nickname,
-            avatarUrl: userData.data.avatarUrl || userData.avatarUrl
+        // 处理可能的嵌套 data 字段
+        if (userData && typeof userData === 'object') {
+          if (userData.data && typeof userData.data === 'object') {
+            userData = {
+              _id: userData._id || userData.data._id,
+              openid: userData.openid || userData.data.openid,
+              nickname: userData.data.nickname || userData.nickname,
+              avatarUrl: userData.data.avatarUrl || userData.avatarUrl,
+              familyId: userData.familyId || userData.data?.familyId,
+              role: userData.role || userData.data?.role,
+              joinTime: userData.joinTime || userData.data?.joinTime,
+              ...userData,
+              ...userData.data
+            }
+            delete userData.data
           }
-          // 删除嵌套的data字段
-          delete userData.data
         }
+        
+        console.log('处理后的用户数据:', userData)
         
         const app = getApp()
         app.globalData.userInfo = userData
         
-        // 保存用户信息到本地存储
         wx.setStorage({
           key: 'userInfo',
           data: userData
         })
-        
-        // 判断是否有需要跳转的页面
-        const redirectUrl = app.globalData.redirectUrl
-        
-        // 登录成功后跳转
-        const navigateAfterLogin = () => {
-          if (!this.data.isNavigating) {
-            this.setData({ isNavigating: true })
-            
-            // 如果有重定向URL，优先跳转到重定向页面
-            if (redirectUrl) {
-              app.globalData.redirectUrl = null
-              
-              // 判断是否是 tabBar 页面
-              const tabBarPages = ['pages/index/index', 'pages/personal/personal']
-              const isTabBarPage = tabBarPages.some(page => redirectUrl.includes(page))
-              
-              if (isTabBarPage) {
-                wx.switchTab({
-                  url: redirectUrl,
-                  fail: () => {
-                    this.setData({ isNavigating: false })
-                  }
-                })
-              } else {
-                wx.reLaunch({
-                  url: redirectUrl,
-                  fail: () => {
-                    this.setData({ isNavigating: false })
-                  }
-                })
-              }
-            } else if (this.data.inviteCode) {
-              // 如果有邀请码，跳转到加入家庭页面
-              wx.navigateTo({
-                url: `/pages/join-family/join-family?inviteCode=${this.data.inviteCode}`,
-                fail: () => {
-                  this.setData({ isNavigating: false })
-                }
-              })
-            } else if (res.result.isNewUser) {
-              // 新用户跳转到个人中心
-              wx.switchTab({
-                url: '/pages/personal/personal',
-                fail: () => {
-                  this.setData({ isNavigating: false })
-                }
-              })
-            } else if (userData.familyId) {
-              // 老用户已加入家庭，跳转到首页
-              wx.switchTab({
-                url: '/pages/index/index',
-                fail: () => {
-                  this.setData({ isNavigating: false })
-                }
-              })
-            } else {
-              // 老用户未加入家庭，跳转到个人中心
-              wx.switchTab({
-                url: '/pages/personal/personal',
-                fail: () => {
-                  this.setData({ isNavigating: false })
-                }
-              })
-            }
-          }
-        }
         
         wx.showToast({
           title: '登录成功',
           icon: 'success'
         })
         
-        setTimeout(navigateAfterLogin, 1500)
+        setTimeout(() => {
+          if (!this.data.isNavigating) {
+            this.setData({ isNavigating: true })
+            
+            if (inviteCode) {
+              wx.navigateTo({
+                url: `/pages/join-family/join-family?inviteCode=${inviteCode}`
+              })
+            } else if (userData.familyId) {
+              wx.switchTab({ url: '/pages/index/index' })
+            } else {
+              wx.switchTab({ url: '/pages/personal/personal' })
+            }
+          }
+        }, 1500)
       } else {
         wx.showToast({
-          title: '登录失败，请重试',
+          title: res.result.error || '登录失败，请重试',
           icon: 'none'
         })
       }
     })
     .catch(err => {
       console.error('登录失败:', err)
-      console.error('错误详情:', JSON.stringify(err))
-      
-      let errorMsg = '登录失败，请重试'
-      if (err.errMsg && err.errMsg.includes('timeout')) {
-        errorMsg = '请求超时，请检查网络后重试'
-      } else if (err.errMsg && err.errMsg.includes('network')) {
-        errorMsg = '网络错误，请检查网络连接'
-      }
-      
-      wx.showToast({
-        title: errorMsg,
-        icon: 'none',
-        duration: 3000
-      })
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' })
     })
     .finally(() => {
       this.setData({ loading: false })
@@ -229,10 +287,10 @@ Page({
 
     if (type === 'user') {
       title = '用户协议'
-      content = `用户协议\n\n1. 欢迎使用暖圆小铺！本协议是您与暖圆小铺之间的法律协议。\n\n2. 您在使用暖圆小铺服务前，应当仔细阅读并理解本协议的全部内容。\n\n3. 您通过登录、使用暖圆小铺服务，即表示您同意受本协议的约束。\n\n4. 暖圆小铺保留随时修改本协议的权利，修改后的协议将在应用内公布。\n\n5. 您应当妥善保管您的账号和密码，对您的账号下的所有行为负责。\n\n6. 您在使用暖圆小铺服务时，应当遵守法律法规，不得利用服务从事违法活动。\n\n7. 暖圆小铺有权在必要时终止向您提供服务，如您违反本协议的规定。\n\n8. 本协议的最终解释权归暖圆小铺所有。`
+      content = '用户协议内容...'
     } else if (type === 'privacy') {
       title = '隐私政策'
-      content = `隐私政策\n\n1. 暖圆小铺重视您的隐私保护，我们将按照本政策处理您的个人信息。\n\n2. 我们收集的信息包括：您的微信昵称、头像、openid等。\n\n3. 我们收集信息的目的是为了提供更好的服务，如识别用户身份、个性化推荐等。\n\n4. 我们不会向第三方分享您的个人信息，除非得到您的明确授权或法律法规要求。\n\n5. 我们会采取合理的安全措施保护您的个人信息，防止信息泄露。\n\n6. 您有权访问、修改或删除您的个人信息，如您需要，请联系我们。\n\n7. 本隐私政策可能会不时更新，更新后的政策将在应用内公布。\n\n8. 如您对本隐私政策有任何疑问，请联系我们。`
+      content = '隐私政策内容...'
     }
 
     this.setData({
@@ -246,6 +304,104 @@ Page({
   onCloseModal() {
     this.setData({
       showAgreementModal: false
+    })
+  },
+
+  // 老用户一键登录
+  onQuickLogin() {
+    const { inviteCode } = this.data
+    const app = getApp()
+    
+    // 从本地存储获取用户信息
+    let userInfo = app.globalData.userInfo
+    if (!userInfo || !userInfo._id) {
+      userInfo = wx.getStorageSync('userInfo')
+    }
+
+    if (!userInfo || !userInfo._id) {
+      wx.showToast({ title: '用户信息不存在，请重新注册', icon: 'none' })
+      this.setData({ needFillInfo: true })
+      return
+    }
+
+    this.setData({ loading: true })
+
+    // 直接调用登录云函数，使用已保存的用户信息
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {
+        userInfo: {
+          nickName: userInfo?.nickname || userInfo?.nickName || '',
+          avatarUrl: userInfo?.avatarUrl || ''
+        }
+      }
+    })
+    .then(res => {
+      console.log('老用户登录结果:', res)
+      if (res.result.success) {
+        // 获取用户数据，确保 _id 被正确保留
+        let userData = res.result.data
+        
+        // 处理可能的嵌套 data 字段
+        if (userData && typeof userData === 'object') {
+          // 如果有嵌套的 data，合并到顶层
+          if (userData.data && typeof userData.data === 'object') {
+            userData = {
+              _id: userData._id || userData.data._id,
+              openid: userData.openid || userData.data.openid,
+              nickname: userData.data.nickname || userData.nickname || userInfo?.nickname,
+              avatarUrl: userData.data.avatarUrl || userData.avatarUrl || userInfo?.avatarUrl,
+              familyId: userData.familyId || userData.data?.familyId || userInfo?.familyId,
+              role: userData.role || userData.data?.role || userInfo?.role,
+              ...userData,
+              ...userData.data
+            }
+            delete userData.data
+          }
+        }
+        
+        console.log('处理后的用户数据:', userData)
+        
+        app.globalData.userInfo = userData
+        
+        wx.setStorage({
+          key: 'userInfo',
+          data: userData
+        })
+        
+        wx.showToast({
+          title: '登录成功',
+          icon: 'success'
+        })
+        
+        setTimeout(() => {
+          if (!this.data.isNavigating) {
+            this.setData({ isNavigating: true })
+            
+            if (inviteCode) {
+              wx.navigateTo({
+                url: `/pages/join-family/join-family?inviteCode=${inviteCode}`
+              })
+            } else if (userData.familyId) {
+              wx.switchTab({ url: '/pages/index/index' })
+            } else {
+              wx.switchTab({ url: '/pages/personal/personal' })
+            }
+          }
+        }, 1500)
+      } else {
+        wx.showToast({
+          title: res.result.error || '登录失败，请重试',
+          icon: 'none'
+        })
+      }
+    })
+    .catch(err => {
+      console.error('老用户登录失败:', err)
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' })
+    })
+    .finally(() => {
+      this.setData({ loading: false })
     })
   }
 })
